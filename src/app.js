@@ -22,12 +22,15 @@ app.use(cookieParser())
 // Routers import
 
 import userRouter from './routers/user.router.js';
-
+import patientRouter from './routers/patient.router.js';
+import doctorRouter from './routers/doctor.router.js';
 
 
 
 // router declarations
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/patient', patientRouter);
+app.use('/api/v1/doctor', doctorRouter);
 
 
 // Error handling middleware

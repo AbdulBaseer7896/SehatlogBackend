@@ -1,0 +1,101 @@
+import mongoose, { Schema } from "mongoose";
+
+const DoctorSchema = new Schema({
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
+    cnicNumber: {
+        type: Number,
+        required: [true, "Please enter a CNIC number"],
+        unique: true,
+        trim: true
+    },
+    phoneNumber: {
+        type: String,
+        required: [true, "Please enter a phone number"],
+        unique: true,
+        trim: true
+    },
+    gender: {
+        type: String,
+        enum: ["male", "female"],
+        required: true
+    },
+    homeAddress: {
+        type: String
+    },
+    workingAddress: {
+        type: String
+    },
+    dateOfBirth: {
+        type: Date,
+        required: true
+    },
+    country: {
+        type: String,
+        required: true
+    },
+    nationality: {
+        type: String,
+        required: true
+    },
+    city: {
+        type: String,
+        required: true
+    },
+    experienceYears: {
+        type: Number,
+        required: true
+    },
+    affiliatedHospitals: [{
+        type: String
+    }],
+    consultationFee: {
+        type: Number,
+        required: true
+    },
+    languagesSpoken: [{
+        type: String
+    }],
+    medicalLicense: [{
+        licenseNumber: {
+            type: String,
+            required: true
+        },
+        stateIssued: {
+            type: String,
+            required: true
+        },
+        expirationDate: {
+            type: Date,
+            required: true
+        }
+    }],
+    ratings: {
+        type: Number,
+        default: 0,
+        min: 0,
+        max: 5
+    },
+    biography: {
+        type: String
+    },
+    status: {
+        type: String,
+        enum: ["active", "inactive"],
+        default: "active"
+    },
+    availableSchedule: [{
+        type: String // Specify format (e.g., "Mon-Fri 9AM-5PM")
+    }],
+    avatar: {
+        type: String
+    },
+    coverImage: {
+        type: String
+    }
+}, { timestamps: true });
+
+export const DoctorInformation = mongoose.model('Doctor', DoctorSchema);
