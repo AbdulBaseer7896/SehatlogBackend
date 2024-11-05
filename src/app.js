@@ -24,6 +24,7 @@ app.use(cookieParser())
 import userRouter from './routers/user.router.js';
 import patientRouter from './routers/patient.router.js';
 import doctorRouter from './routers/doctor.router.js';
+import appointmentRouter from './routers/appointment.router.js';
 
 
 
@@ -31,6 +32,7 @@ import doctorRouter from './routers/doctor.router.js';
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/patient', patientRouter);
 app.use('/api/v1/doctor', doctorRouter);
+app.use('/api/v1/patient/appointment', appointmentRouter);
 
 
 // Error handling middleware

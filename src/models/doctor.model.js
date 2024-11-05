@@ -98,4 +98,61 @@ const DoctorSchema = new Schema({
     }
 }, { timestamps: true });
 
-export const DoctorInformation = mongoose.model('Doctor', DoctorSchema);
+
+
+const DoctorScheduleSchema = new mongoose.Schema({
+    doctorId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Doctor",
+        required: true
+    },
+    startTime: {
+        type: String, // e.g., "09:00"
+        required: true,
+        validate: {
+            validator: (v) => /^([01]\d|2[0-3]):([0-5]\d)$/.test(v), // Regex to enforce "HH:mm" format
+            message: props => `${props.value} is not a valid 24-hour format time (HH:mm)`
+        }
+    },
+    endTime: {
+        type: String, // e.g., "17:00"
+        required: true,
+        validate: {
+            validator: (v) => /^([01]\d|2[0-3]):([0-5]\d)$/.test(v),
+            message: props => `${props.value} is not a valid 24-hour format time (HH:mm)`
+        }
+    },
+    slotDuration: {
+        type: Number, // e.g., 15 (for 15 minutes per slot)
+        required: true
+    },
+    breakTimes: [{
+        start: {
+            type: String, // e.g., "12:00"
+            validate: {
+                validator: (v) => /^([01]\d|2[0-3]):([0-5]\d)$/.test(v),
+                message: props => `${props.value} is not a valid 24-hour format time (HH:mm)`
+            }
+        },
+        end: {
+            type: String, // e.g., "13:00"
+            validate: {
+                validator: (v) => /^([01]\d|2[0-3]):([0-5]\d)$/.test(v),
+                message: props => `${props.value} is not a valid 24-hour format time (HH:mm)`
+            }
+        }
+    }],
+    offDays: [{
+        type: [String],
+        enum: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+    }],
+    maxAppointmentsPerDay: {
+        type: Number,
+        default: 20
+    }
+});
+
+export const DoctorSchedule = mongoose.model("DoctorSchedule", DoctorScheduleSchema);
+
+
+export const DoctorInformation  = mongoose.model("DoctorInformation", DoctorSchema);
