@@ -34,6 +34,9 @@ const userSchema = new Schema({
         required: [true, "Please enter a User Role"],
         enum: ["Doctor", "Patient"],
     },
+    avatar: {
+        type: String    
+    },
     refreshToken:{
         type: String
     }

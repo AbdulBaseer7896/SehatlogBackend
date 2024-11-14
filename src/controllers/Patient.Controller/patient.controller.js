@@ -7,13 +7,17 @@ import { ApiResponse } from "../../utils/ApiResponse.js"
 
 
 const insertPatentDetails = asyncHandler(async (req, res) => {
+
+    console.log("this is the insertPatent detailes")
     const { fullName, phoneNumber, cnicNumber, gender, homeAddress, workingAddress,
         dataOfBirth, country, Nationality, City, BloodGroup, KnownAllergies,
         chronicDiseases, currentMedication, EmergencyContactName,
         EmergencyContactRelationShip, EmergencyContactNumber, AnyDisability
     } = req.body
 
-    // console.log(req.body)
+
+
+    console.log(req.body)
 
     const existedPatient = await  PatientInformation.findOne({
         $or : [{phoneNumber} , {cnicNumber}]
