@@ -9,24 +9,40 @@ import { ApiResponse } from "../../utils/ApiResponse.js"
 const insertPatentDetails = asyncHandler(async (req, res) => {
 
     console.log("this is the insertPatent detailes")
-    const { fullName, phoneNumber, cnicNumber, gender, homeAddress, workingAddress,
-        dataOfBirth, country, Nationality, City, BloodGroup, KnownAllergies,
-        chronicDiseases, currentMedication, EmergencyContactName,
-        EmergencyContactRelationShip, EmergencyContactNumber, AnyDisability
+    const {                     fullName,
+                    phoneNumber,
+                    cnicNumber,
+                    gender,
+                    homeAddress,
+                    workingAddress,
+                    dataOfBirth,
+                    country,
+                    nationality,
+                    city,
+                    bloodGroup,
+                    knownAllergies, // Ensure it's passed as an array
+                    chronicDiseases, // Ensure it's passed as an array
+                    currentMedication, // Ensure it's passed as an array
+                    emergencyContactNamePrimary,
+                    emergencyContactRelationShipPrimary,
+                    emergencyContactNumberPrimary,
+                    emergencyContactNameSecondary,
+                    emergencyContactRelationShipSecondary,
+                    emergencyContactNumberSecondary
     } = req.body
 
 
 
     console.log(req.body)
 
-    const existedPatient = await  PatientInformation.findOne({
-        $or : [{phoneNumber} , {cnicNumber}]
-    })
+    // const existedPatient = await  PatientInformation.findOne({
+    //     $or : [{phoneNumber} , {cnicNumber}]
+    // })
 
     
-    if(existedPatient) {
-        throw new ApiError(409 , "Patient Phone Number or CNIC already exists")
-    }
+    // if(existedPatient) {
+    //     throw new ApiError(409 , "Patient Phone Number or CNIC already exists")
+    // }
 
     const userId = req.user?._id
 
@@ -41,25 +57,26 @@ const insertPatentDetails = asyncHandler(async (req, res) => {
 
     if(!isPatientAlreadyExisted){
         const patients = await PatientInformation.create({
-            userId : userId,
-            fullName: fullName,
-            phoneNumber: phoneNumber,
-            cnicNumber: cnicNumber,
-            gender: gender,
-            homeAddress: homeAddress,
-            workingAddress: workingAddress,
-            dataOfBirth: dataOfBirth,
-            country: country,
-            Nationality: Nationality,
-            City: City,
-            BloodGroup: BloodGroup,
-            KnownAllergies: KnownAllergies,
-            chronicDiseases: chronicDiseases,
-            currentMedication: currentMedication,
-            EmergencyContactName: EmergencyContactName,
-            EmergencyContactRelationShip: EmergencyContactRelationShip,
-            EmergencyContactNumber: EmergencyContactNumber,
-            AnyDisability: AnyDisability
+            userId,
+            phoneNumber,
+            cnicNumber,
+            gender,
+            homeAddress,
+            workingAddress,
+            dataOfBirth,
+            country,
+            nationality,
+            city,
+            bloodGroup,
+            knownAllergies, // Ensure it's passed as an array
+            chronicDiseases, // Ensure it's passed as an array
+            currentMedication, // Ensure it's passed as an array
+            emergencyContactNamePrimary,
+            emergencyContactRelationShipPrimary,
+            emergencyContactNumberPrimary,
+            emergencyContactNameSecondary,
+            emergencyContactRelationShipSecondary,
+            emergencyContactNumberSecondary
         })
         console.log("This is 2")
     
@@ -86,24 +103,25 @@ const insertPatentDetails = asyncHandler(async (req, res) => {
             { userId: req.user?._id }, // Correctly query by userId
             {
                 $set: {
-                    fullName: fullName,
-                    phoneNumber: phoneNumber,
-                    cnicNumber: cnicNumber,
-                    gender: gender,
-                    homeAddress: homeAddress,
-                    workingAddress: workingAddress,
-                    dataOfBirth: dataOfBirth,
-                    country: country,
-                    Nationality: Nationality,
-                    City: City,
-                    BloodGroup: BloodGroup,
-                    KnownAllergies: KnownAllergies,
-                    chronicDiseases: chronicDiseases,
-                    currentMedication: currentMedication,
-                    EmergencyContactName: EmergencyContactName,
-                    EmergencyContactRelationShip: EmergencyContactRelationShip,
-                    EmergencyContactNumber: EmergencyContactNumber,
-                    AnyDisability: AnyDisability
+                    phoneNumber,
+                    cnicNumber,
+                    gender,
+                    homeAddress,
+                    workingAddress,
+                    dataOfBirth,
+                    country,
+                    nationality,
+                    city,
+                    bloodGroup,
+                    knownAllergies, // Ensure it's passed as an array
+                    chronicDiseases, // Ensure it's passed as an array
+                    currentMedication, // Ensure it's passed as an array
+                    emergencyContactNamePrimary,
+                    emergencyContactRelationShipPrimary,
+                    emergencyContactNumberPrimary,
+                    emergencyContactNameSecondary,
+                    emergencyContactRelationShipSecondary,
+                    emergencyContactNumberSecondary
                 }
             },
             { new: true, select: "-password" } // Include 'select' option to exclude password
@@ -122,7 +140,36 @@ const insertPatentDetails = asyncHandler(async (req, res) => {
 
 
 
+const getPatientProfileData = async (req, res) => {
+    const userId = req.user?._id
+
+    if(!userId){
+        throw new ApiError(400, "User Id Is required")
+    }
+
+
+    const PatientProfileData = await PatientInformation.findOne({ userId });
+
+    if(PatientProfileData){
+        return res
+        .status(201)
+        .json(
+            new ApiResponse(201, {
+                PatientProfileData : PatientProfileData,
+            },
+            "Patient Profile Data sended Successfully!!!"
+            )
+        )
+    }
+
+
+
+}
+
+
+
 
 export {
     insertPatentDetails,
+    getPatientProfileData
 }

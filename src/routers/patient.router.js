@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
-import { insertPatentDetails } from "../controllers/Patient.Controller/patient.controller.js";
+import { getPatientProfileData, insertPatentDetails } from "../controllers/Patient.Controller/patient.controller.js";
 import {isPatientAuth} from "../middlewares/isPatientAuth.middleware.js"
 import { insertVaccinationData } from "../controllers/Patient.Controller/vaccination.controller.js";
 import {upload} from "../middlewares/multer.middleware.js"
@@ -15,6 +15,10 @@ const router = Router();
 
 
 // secured routes
+
+
+
+router.route("/get-patient-profile-Details").get(verifyJWT , getPatientProfileData)
 
 
 router.route("/insert-patient-Details").patch(verifyJWT, isPatientAuth ,  insertPatentDetails)

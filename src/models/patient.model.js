@@ -7,98 +7,74 @@ import bcrypt from "bcrypt";
 
 
 const PatientSchema = new Schema({
-
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
     },
-    cnicNumber : {
-        type:Number,
-        required: [true, "Please enter a CNIC number"],
+    cnicNumber: {
+        type: Number,
         unique: true,
-        lowercase: true,
-        trim:true,
-    },
-    fullName: {
-        type:String,
-        required: [true, "Please enter a fullname"],
-        trim:true,
-        index:true
+        trim: true,
     },
     phoneNumber: {
-        type:String,
-        required: [true, "Please enter a phone number"],
+        type: String,
         unique: true,
-        trim:true,
+        trim: true,
     },
     gender: {
-        type:String,
-        enum: ["male", "female"],
-        required:true,
+        type: String,
+        enum: ["male", "female", "other"],
     },
-    homeAddress:{
-        type:String,
+    homeAddress: {
+        type: String,
     },
-    workingAddress:{
-        type:String
+    dataOfBirth: {
+        type: Date,
     },
-    dataOfBirth:{
-        type:Date,
-        required:true,
+    country: {
+        type: String,
     },
-    country:{
-        type:String,
-        required:true,
+    nationality: {
+        type: String,
     },
-    Nationality:{
-        type:String,
-        required:true,
+    city: {
+        type: String,
     },
-    City:{
-        type:String,
-        required:true,
-    },
-    BloodGroup:{
-        type:String,
+    bloodGroup: {
+        type: String,
         enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
-        required:true,
     },
-    KnownAllergies:{
-        type:String,
+    knownAllergies: {
+        type: [String], // Updated to array of strings
     },
-    chronicDiseases:{
-        type:String,
+    chronicDiseases: {
+        type: [String], // Updated to array of strings
     },
-    currentMedication:{
-        type:String,
+    currentMedication: {
+        type: [String], // Updated to array of strings
     },
-    EmergencyContactName:{
-        type:String,
-        required: true,
+    emergencyContactNamePrimary: {
+        type: String,
     },
-    EmergencyContactRelationShip:{
-        type:String,
+    emergencyContactRelationShipPrimary: {
+        type: String,
         enum: ["father", "mother", "brother", "sister", "friend", "other"],
-        required:true,
     },
-    EmergencyContactNumber:{
-        type:String,
-        required: true,
+    emergencyContactNumberPrimary: {
+        type: Number,
     },
-    AnyDisability:{
-        type:Boolean,
-        default: false,
+    emergencyContactNameSecondary: {
+        type: String,
     },
-    avatar: {
-        type:String,
+    emergencyContactRelationShipSecondary: {
+        type: String,
+        enum: ["father", "mother", "brother", "sister", "friend", "other"],
     },
-    coverImage: {
-        type:String,
+    emergencyContactNumberSecondary: {
+        type: String,
     },
-
-},{timestamps:true})
-
+}, { timestamps: true });
 
 
 
