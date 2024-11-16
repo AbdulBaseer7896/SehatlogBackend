@@ -56,12 +56,7 @@ router.route("/add-prescription-Record").post(verifyJWT, isPatientAuth ,
 
 
 router.route("/add-Report-Record").post(verifyJWT, isPatientAuth ,
-    upload.fields([
-        {
-            name: "reportPic",
-            maxCount: 1
-        }
-    ]),
+    upload.array("reportPic"),
     addReportRecord
 )
 // router.route("/insert-Vaccines-Details").post(verifyJWT, isPatientAuth ,  insertVaccinationData)

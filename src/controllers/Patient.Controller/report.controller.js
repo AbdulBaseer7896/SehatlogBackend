@@ -1,73 +1,47 @@
+
+
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { ApiError } from "../../utils/ApiError.js";
-import { report } from "../../models/report.model.js"
-import { uploadOnCloudinary } from "../../utils/cloudinary.js"
-import { ApiResponse } from "../../utils/ApiResponse.js"
-
-
+import { report } from "../../models/report.model.js";
+import { uploadOnCloudinary } from "../../utils/cloudinary.js";
+import { ApiResponse } from "../../utils/ApiResponse.js";
 
 const addReportRecord = asyncHandler(async (req, res) => {
+    const { reportName, reportType, reportDate, findings, testName, resultValue, 
+        units, referenceRange, description, notes, status,} = req.body;
 
-    const { doctorId, reportName, reportType,
-        reportDate, findings, testName,resultValue,units,
-        referenceRange ,description ,notes,  status
-    } = req.body
+    const patientId = req.user._id;
 
-    console.log("its test 1")
-    const patientId = req.user._id
-
-    if(!patientId){
-        throw new ApiError(409, "unauthorized request")
+    if (!patientId) {
+        throw new ApiError(409, "Unauthorized request");
     }
-
-    console.log("its test 2")
     if (!reportName) {
-        throw new ApiError(400, "Report Name is required")
+        throw new ApiError(400, "Report Name is required");
     }
-    const reportPic = req.files?.["reportPic"]?.[0]?.path || "" ;
-    console.log("This is the reportPic = " , reportPic)
-    console.log("its test 22")
-    const documentImage = await uploadOnCloudinary(reportPic)
-
-    console.log("its test 222")
-
-
-    const reportData = await report.create({
-        patientId : patientId,
-        doctorId,
-        reportName,
-        reportType,
-        reportDate,
-        findings,
-        testName,
-        resultValue,
-        units,
-        referenceRange,
-        description,
-        notes,
-        status,
-        reportPic: documentImage?.url || "",
-    })
-
-    console.log("its test 3")
-
-
-
-
-    const addReport = await report.findById(reportData._id)
-    if (!addReport) {
-        throw new ApiError(500, "Something went wrong while Report inserting!!")
+    const reportPics = [];
+    // Handle multiple file uploads
+    if (req.files) {
+        // If files are uploaded, process them
+        for (const file of req.files) {
+            const uploadedImage = await uploadOnCloudinary(file.path);
+            if (uploadedImage?.url) {
+                reportPics.push(uploadedImage.url); // Push image URL to array
+            }
+        }
     }
+    // Create the report record
+    const reportData = await report.create({ patientId: patientId, reportName, reportType, 
+        reportDate, findings, testName, resultValue, units, referenceRange,
+         description, notes, status, reportPics,  // Store the array of image URLs or an empty array if no images were uploaded
+    });
 
-    console.log("its test 4")
-
+    if (!reportData) {
+        throw new ApiError(500, "Something went wrong while inserting the report!");
+    }
 
     return res.status(201).json(
-        new ApiResponse(200, addReport, "Report added successfully!!!")
-    )
+        new ApiResponse(200, reportData, "Report added successfully!")
+    );
+});
 
-})
-
-export {
-    addReportRecord,
-}
+export { addReportRecord };
