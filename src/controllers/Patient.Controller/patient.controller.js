@@ -161,9 +161,6 @@ const getPatientProfileData = async (req, res) => {
             )
         )
     }
-
-
-
 }
 
 

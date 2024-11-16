@@ -44,4 +44,37 @@ const addReportRecord = asyncHandler(async (req, res) => {
     );
 });
 
-export { addReportRecord };
+
+
+
+
+const getPatientReportData = async (req, res) => {
+    const userId = req.user?._id
+
+    if(!userId){
+        throw new ApiError(400, "User Id Is required")
+    }
+
+    console.log("User Id: " + userId)
+
+    // const PatientReportData = await report.findOne({ userId });
+    const PatientReportData = await report.find({ patientId: userId });
+
+    console.log("this is the patient report = " , PatientReportData)
+
+    if(PatientReportData){
+        return res
+        .status(201)
+        .json(
+            new ApiResponse(201, {
+                PatientProfileData : PatientReportData,
+            },
+            "Patient Profile Data sended Successfully!!!"
+            )
+        )
+    }
+}
+export { 
+    addReportRecord ,
+    getPatientReportData
+};

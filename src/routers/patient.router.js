@@ -6,7 +6,7 @@ import { insertVaccinationData } from "../controllers/Patient.Controller/vaccina
 import {upload} from "../middlewares/multer.middleware.js"
 import { addHospitalRecord } from "../controllers/Patient.Controller/hospitalRecord.controller.js";
 import { addPrescriptionRecord } from "../controllers/Patient.Controller/prescription.controller.js";
-import { addReportRecord } from "../controllers/Patient.Controller/report.controller.js"
+import { addReportRecord, getPatientReportData } from "../controllers/Patient.Controller/report.controller.js"
 
 const router = Router();
 
@@ -19,6 +19,7 @@ const router = Router();
 
 
 router.route("/get-patient-profile-Details").get(verifyJWT , getPatientProfileData)
+router.route("/get-patient-report-Details").get(verifyJWT , getPatientReportData)
 
 
 router.route("/insert-patient-Details").patch(verifyJWT, isPatientAuth ,  insertPatentDetails)
