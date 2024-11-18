@@ -8,28 +8,39 @@ const hospitalRecordSchema = new Schema({
         ref: 'User',
         required: true
     },
-    doctorId:{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Doctor',
-    },
+    // doctorId:{
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: 'Doctor',
+    // },
     hospitalName : {
         type:String,
         required: [true, "Please enter a Hospital Name"],
     },
-    dataOfAdmission: {
+    dateOfAdmission: {
         type:Date,
     },
-    dataOfDischarge: {
+    dateOfDischarge: {
         type:Date
+    },
+    admissionNotes: {
+        type:String,
+    },
+    dischargeNotes: {
+        type:String,
     },
     status: {
         type:String,
     },
-    otherDocumentsImages:{
+    description: {
         type:String,
+    },
+    hospitalDocumentsPic:{
+        type:[String],
     }
 
 },{timestamps:true})
+
+
 
 
 

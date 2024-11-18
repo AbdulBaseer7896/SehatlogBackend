@@ -8,9 +8,11 @@ import { ApiResponse } from "../../utils/ApiResponse.js"
 
 const addHospitalRecord = asyncHandler(async (req, res) => {
 
-    const { doctorId, hospitalName, dataOfAdmission, dataOfDischarge,
-        admissionNotes, status
+    const {  hospitalName, dateOfAdmission, dateOfDischarge,
+        admissionNotes ,dischargeNotes  , status , description
     } = req.body
+
+    console.log("this is the req.body  = " , req.body)
 
     const patientId = req.user._id
 
@@ -21,20 +23,34 @@ const addHospitalRecord = asyncHandler(async (req, res) => {
     if (!hospitalName) {
         throw new ApiError(400, "Hospital Name is required")
     }
-    // const DocumentsPic = req.files["otherDocumentsImages"][0]?.path;
-    const DocumentsPic = req.files?.["otherDocumentsImages"]?.[0]?.path || ""
-    const documentImage = await uploadOnCloudinary(DocumentsPic)
+    // const DocumentsPic = req.files["hospitalDocumentsPic"][0]?.path;
+    // const DocumentsPic = req.files?.["hospitalDocumentsPic"]?.[0]?.path || ""
+    // const documentImage = await uploadOnCloudinary(DocumentsPic)
+
+    const hospitalDocumentsPic = [];
+    // Handle multiple file uploads
+    if (req.files) {
+        // If files are uploaded, process them
+        for (const file of req.files) {
+            const uploadedImage = await uploadOnCloudinary(file.path);
+            if (uploadedImage?.url) {
+                hospitalDocumentsPic.push(uploadedImage.url); // Push image URL to array
+            }
+        }
+    }
+
 
 
     const hospitalData = await hospitalRecord.create({
         patientId : patientId,
-        doctorId,
         hospitalName,
-        dataOfAdmission,
-        dataOfDischarge,
+        dateOfAdmission,
+        dateOfDischarge,
         admissionNotes,
+        dischargeNotes,
         status,
-        otherDocumentsImages: documentImage?.url || "",
+        description,
+        hospitalDocumentsPic,
     })
 
 
@@ -50,6 +66,36 @@ const addHospitalRecord = asyncHandler(async (req, res) => {
 
 })
 
+
+
+
+const getPatientHospitalData = asyncHandler(async (req, res) => {
+    const userId = req.user?._id
+
+    if(!userId){
+        throw new ApiError(400, "User Id Is required")
+    }
+
+
+    // const PatientHospitalData = await report.findOne({ userId });
+    const PatientHospitalData = await hospitalRecord.find({ patientId: userId });
+
+    console.log("this si the hospitatl data = " + PatientHospitalData)
+
+    if(PatientHospitalData){
+        return res
+        .status(201)
+        .json(
+            new ApiResponse(201, {
+                PatientHospitalData : PatientHospitalData,
+            },
+            "Patient Profile Data sended Successfully!!!"
+            )
+        )
+    }
+})
+
 export {
     addHospitalRecord,
+    getPatientHospitalData
 }
