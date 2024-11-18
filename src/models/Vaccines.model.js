@@ -10,10 +10,10 @@ const vaccinationSchema = new Schema({
         ref: 'User',
         required: true
     },
-    doctorId:{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Doctor',
-    },
+    // doctorId:{
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: 'Doctor',
+    // },
     vaccineName : {
         type:String,
         required: [true, "Please enter a Vaccine Name"],
@@ -26,18 +26,22 @@ const vaccinationSchema = new Schema({
     },
     totalDoses: {
         type:Number,
+        required: [true, "Please enter Total Doses"],
     },
-    nextDueDate:{
+    firstDoseDate:{
         type:Date,
     },
-    notes:{
+    upcomingDates:{
+        type:String,
+    },
+    description:{
         type:String,
     },
     status:{
         type:String
     },
-    vaccinationPic: {
-        type:String,
+    vaccinePic: {
+        type:[String],
     },
 
 },{timestamps:true})

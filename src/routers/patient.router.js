@@ -2,7 +2,7 @@ import { Router } from "express";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { getPatientProfileData, insertPatentDetails } from "../controllers/Patient.Controller/patient.controller.js";
 import {isPatientAuth} from "../middlewares/isPatientAuth.middleware.js"
-import { insertVaccinationData } from "../controllers/Patient.Controller/vaccination.controller.js";
+import { getPatientVaccinationData, insertVaccinationData } from "../controllers/Patient.Controller/vaccination.controller.js";
 import {upload} from "../middlewares/multer.middleware.js"
 import { addHospitalRecord } from "../controllers/Patient.Controller/hospitalRecord.controller.js";
 import { addPrescriptionRecord } from "../controllers/Patient.Controller/prescription.controller.js";
@@ -20,17 +20,13 @@ const router = Router();
 
 router.route("/get-patient-profile-Details").get(verifyJWT , getPatientProfileData)
 router.route("/get-patient-report-Details").get(verifyJWT , getPatientReportData)
+router.route("/get-patient-vaccination-Details").get(verifyJWT , getPatientVaccinationData)
 
 
 router.route("/insert-patient-Details").patch(verifyJWT, isPatientAuth ,  insertPatentDetails)
 
 router.route("/insert-Vaccines-Details").post(verifyJWT, isPatientAuth ,
-    upload.fields([
-        {
-            name: "vaccinationPic",
-            maxCount: 1
-        }
-    ]),
+    upload.array("vaccinePic"),
     insertVaccinationData
 )
 

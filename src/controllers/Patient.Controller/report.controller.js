@@ -7,7 +7,7 @@ import { uploadOnCloudinary } from "../../utils/cloudinary.js";
 import { ApiResponse } from "../../utils/ApiResponse.js";
 
 const addReportRecord = asyncHandler(async (req, res) => {
-    const { reportName, reportType, reportDate, findings, testName, resultValue, 
+    const { reportName, reportType, reportDate, labName, findings, testName, resultValue, 
         units, referenceRange, description, notes, status,} = req.body;
 
     const patientId = req.user._id;
@@ -31,7 +31,7 @@ const addReportRecord = asyncHandler(async (req, res) => {
     }
     // Create the report record
     const reportData = await report.create({ patientId: patientId, reportName, reportType, 
-        reportDate, findings, testName, resultValue, units, referenceRange,
+        reportDate, labName ,findings, testName, resultValue, units, referenceRange,
          description, notes, status, reportPics,  // Store the array of image URLs or an empty array if no images were uploaded
     });
 
@@ -48,19 +48,17 @@ const addReportRecord = asyncHandler(async (req, res) => {
 
 
 
-const getPatientReportData = async (req, res) => {
+const getPatientReportData = asyncHandler(async (req, res) => {
     const userId = req.user?._id
 
     if(!userId){
         throw new ApiError(400, "User Id Is required")
     }
 
-    console.log("User Id: " + userId)
 
     // const PatientReportData = await report.findOne({ userId });
     const PatientReportData = await report.find({ patientId: userId });
 
-    console.log("this is the patient report = " , PatientReportData)
 
     if(PatientReportData){
         return res
@@ -73,7 +71,7 @@ const getPatientReportData = async (req, res) => {
             )
         )
     }
-}
+})
 export { 
     addReportRecord ,
     getPatientReportData
