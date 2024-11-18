@@ -79,9 +79,6 @@ const getPatientHospitalData = asyncHandler(async (req, res) => {
 
     // const PatientHospitalData = await report.findOne({ userId });
     const PatientHospitalData = await hospitalRecord.find({ patientId: userId });
-
-    console.log("this si the hospitatl data = " + PatientHospitalData)
-
     if(PatientHospitalData){
         return res
         .status(201)
