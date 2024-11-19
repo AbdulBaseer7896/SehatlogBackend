@@ -39,6 +39,8 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
     try {
         // Check for token in cookies or Authorization header
         const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "");
+        console.log("Extracted token:", token);
+
         if (!token) {
             throw new ApiError(401, "Authentication token missing");
         }
@@ -46,6 +48,13 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
         const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
         // Find the user in the database
         const user = await User.findById(decodedToken?._id).select("-password -refreshToken");
+
+        console.log("this is the token key = " , process.env.ACCESS_TOKEN_SECRET)
+        if (!process.env.ACCESS_TOKEN_SECRET) {
+            console.error("Access token secret is missing in environment variables.");
+            throw new ApiError(500, "Server misconfiguration. Please contact support.");
+        }
+        
 
         if (!user) {
             throw new ApiError(401, "User not authenticated");
