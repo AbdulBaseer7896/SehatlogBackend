@@ -8,12 +8,22 @@ import jwt from "jsonwebtoken"
 export const isPatientAuth = asyncHandler(async(req , res , next)=>{
     console.log("This is patient Auth ")
     try {
+
+        // const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "");
+
         const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer " , "")
-    
+        console.log("Extracted token:", token);
+
         if(!token){
             throw new ApiError(401 ,"Not authenticated request token")
         }
     
+        console.log("this is the token key = " , process.env.ACCESS_TOKEN_SECRET)
+        if (!process.env.ACCESS_TOKEN_SECRET) {
+            console.error("Access token secret is missing in environment variables.");
+            throw new ApiError(500, "Server misconfiguration. Please contact support.");
+        }
+        
         const decodedToken = jwt.verify(token , process.env.ACCESS_TOKEN_SECRET)
     
         const user = await User.findById(decodedToken?._id).select("-password -refreshToken")
