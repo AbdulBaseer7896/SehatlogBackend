@@ -113,45 +113,39 @@ const getDoctorProfileData = async (req, res) => {
 
 
 
+const setDoctorSchedule = asyncHandler(async (req, res) => {
+    const { clinics, maxAppointmentsPerDay } = req.body;
+    const doctorId = req.user?._id;
 
-
-
-
-
-
-
-const setDoctorSchedule = asyncHandler(async (req, res)=>{
-
-    const {
-        startTime,
-        endTime,
-        slotDuration,
-        breakTimes,
-        maxAppointmentsPerDay,
-        offDays
-    } = req.body;
-
-
-    const doctorId = req.user?._id
-
-
-    // Validate required fields
-    if (!startTime || !endTime || !slotDuration) {
-        throw new ApiError(401, "Start/end time or slotDuration required");
+    // Validate the presence of clinics
+    if (!clinics || !Array.isArray(clinics) || clinics.length === 0) {
+        throw new ApiError(401, "Clinics data is required and should be an array");
     }
 
+    // Validate each clinic's structure
+    clinics.forEach((clinic, index) => {
+        if (!clinic.name || !clinic.location || !clinic.days || !clinic.timing || !clinic.timing.start || !clinic.timing.end) {
+            throw new ApiError(400, `Clinic at index ${index} is missing required fields`);
+        }
+        if (!Array.isArray(clinic.days)) {
+            throw new ApiError(400, `Days for clinic at index ${index} must be an array`);
+        }
+        clinic.breaks?.forEach((breakTime, breakIndex) => {
+            if (!breakTime.start || !breakTime.end) {
+                throw new ApiError(400, `Break at index ${breakIndex} in clinic ${index} is missing start or end time`);
+            }
+        });
+    });
 
     // Upsert the schedule (create if not exists, update if exists)
     const schedule = await DoctorSchedule.findOneAndUpdate(
         { doctorId },
-        { startTime, endTime, slotDuration, breakTimes, maxAppointmentsPerDay, offDays },
+        { clinics, maxAppointmentsPerDay },
         { upsert: true, new: true }
     );
 
     return res.status(200).json(new ApiResponse(200, schedule, "Doctor schedule set successfully"));
-})
-
-
+});
 
 
 export {

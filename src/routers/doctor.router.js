@@ -18,4 +18,4 @@ router.route("/set-doctor-schedule").patch(verifyJWT , isDoctorAuth ,  setDoctor
 
 
 
-export default router
+export default router 
