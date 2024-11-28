@@ -11,26 +11,28 @@ const insertDoctorDetails = asyncHandler(async (req, res) => {
         gender,
         homeAddress,
         workingAddress,
-        dateOfBirth,
+        DOB,
         country,
         nationality,
         city,
-        experienceYears,
+        experience,
         affiliatedHospitals,
-        consultationFee,
         languagesSpoken,
         medicalLicense,
         ratings,
         biography,
         status,
-        availableSchedule,
+        qualification,      // Added qualification
+        specialization,     // Added specialization
+        clinics,            // Added clinics
+        memberships         // Added memberships
     } = req.body;
 
-    const userId = req.user._id
+    const userId = req.user._id;
 
-    console.log("this is the user = " , req.user)
+    console.log("this is the user =", req.user);
 
-    if(!userId){
+    if (!userId) {
         throw new ApiError(401, "Not authenticated request token");
     }
 
@@ -43,38 +45,79 @@ const insertDoctorDetails = asyncHandler(async (req, res) => {
         throw new ApiError(409, "Doctor with this CNIC or phone number already exists");
     }
 
-
     // Create new doctor details
-    const Doctor = new DoctorInformation({
+    const doctor = new DoctorInformation({
         userId,
         cnicNumber,
         phoneNumber,
         gender,
         homeAddress,
         workingAddress,
-        dateOfBirth,
+        DOB,
         country,
         nationality,
         city,
-        experienceYears,
+        experience,
         affiliatedHospitals,
-        consultationFee,
         languagesSpoken,
         medicalLicense,
         ratings,
         biography,
         status,
-        availableSchedule,
+        qualification,         // Saving qualification
+        specialization,        // Saving specialization
+        clinics,               // Saving clinics
+        memberships            // Saving memberships
     });
 
     // Save the doctor to the database
-    await Doctor.save();
+    await doctor.save();
 
     // Send response
     return res.status(201).json(
-        new ApiResponse(201, Doctor, "Doctor information added successfully")
+        new ApiResponse(201, doctor, "Doctor information added successfully")
     );
 });
+
+
+
+
+
+
+
+const getDoctorProfileData = async (req, res) => {
+    const userId = req.user?._id
+
+    if(!userId){
+        throw new ApiError(400, "User Id Is required")
+    }
+
+    console.log("this si 2324")
+
+    const DoctorProfileData = await DoctorInformation.findOne({ userId });
+
+    console.log("this si the DoctorProfileData =  " + DoctorProfileData)
+
+    if(DoctorProfileData){
+        return res
+        .status(201)
+        .json(
+            new ApiResponse(201, {
+                DoctorProfileData : DoctorProfileData,
+            },
+            "Doctor Profile Data sended Successfully!!!"
+            )
+        )
+    }
+}
+
+
+
+
+
+
+
+
 
 
 const setDoctorSchedule = asyncHandler(async (req, res)=>{
@@ -113,5 +156,6 @@ const setDoctorSchedule = asyncHandler(async (req, res)=>{
 
 export {
     insertDoctorDetails,
-    setDoctorSchedule
+    setDoctorSchedule,
+    getDoctorProfileData
 };

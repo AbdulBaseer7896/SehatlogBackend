@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken"
 
 
 export const isDoctorAuth = asyncHandler(async(req , res , next)=>{
-    console.log("This is patient Auth ")
+    console.log("This is doctor Auth ")
     try {
         const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer " , "")
     
@@ -27,6 +27,7 @@ export const isDoctorAuth = asyncHandler(async(req , res , next)=>{
             throw new ApiError(403 ,"Unauthorized to access this route just Doctor is allowed")
         }
         req.user = user
+        console.log("This is the next for doctor")
         next()
     } catch (error) {
         throw new ApiError(401 , error?.message || "Invalid access token")

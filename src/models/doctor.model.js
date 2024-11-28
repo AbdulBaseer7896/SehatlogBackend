@@ -29,7 +29,7 @@ const DoctorSchema = new Schema({
     workingAddress: {
         type: String
     },
-    dateOfBirth: {
+    DOB: {
         type: Date,
         required: true
     },
@@ -45,17 +45,17 @@ const DoctorSchema = new Schema({
         type: String,
         required: true
     },
-    experienceYears: {
+    experience: {
         type: Number,
         required: true
     },
     affiliatedHospitals: [{
         type: String
     }],
-    consultationFee: {
-        type: Number,
-        required: true
-    },
+    // consultationFee: {
+    //     type: Number,
+    //     required: true
+    // },
     languagesSpoken: [{
         type: String
     }],
@@ -84,11 +84,37 @@ const DoctorSchema = new Schema({
     },
     status: {
         type: String,
-        enum: ["active", "inactive"],
-        default: "active"
     },
-    availableSchedule: [{
-        type: String // Specify format (e.g., "Mon-Fri 9AM-5PM")
+    qualification: [{
+        type: String // Array of qualifications (e.g., "MBBS", "MD")
+    }],
+    specialization: [{
+        type: String // Array of specializations (e.g., "Dermatology", "Cardiology")
+    }],
+    clinics: [{
+        name: {
+            type: String,
+            required: true
+        },
+        location: {
+            type: String,
+            required: true
+        },
+        days: [{
+            type: String,
+            enum: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+        }],
+        timing: {
+            start: {
+                type: String
+            },
+            end: {
+                type: String
+            }
+        }
+    }],
+    memberships: [{
+        type: String // Array of memberships (e.g., "Medical Association")
     }],
     avatar: {
         type: String
