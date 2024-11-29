@@ -2,6 +2,7 @@ import { asyncHandler } from "../../utils/asyncHandler.js";
 import { ApiError } from "../../utils/ApiError.js";
 import {PatientInformation} from "../../models/patient.model.js"
 import { ApiResponse } from "../../utils/ApiResponse.js"
+import { DoctorInformation } from "../../models/doctor.model.js";
 
 
 
@@ -166,7 +167,70 @@ const getPatientProfileData = async (req, res) => {
 
 
 
+
+
+// const getDoctorData = async (req, res) => {
+//     const userId = req.user?._id
+
+//     if(!userId){
+//         throw new ApiError(400, "User Id Is required")
+//     }
+
+//     const DoctorInformationData = await DoctorInformation.find().select("-cnicNumber -phoneNumber -homeAddress -DOB -city -nationality -createdAt -updatedAt");
+
+//     console.log("This si ok to see  " ,DoctorInformationData)
+
+//     if(DoctorInformationData){
+//         return res
+//         .status(201)
+//         .json(
+//             new ApiResponse(201, {
+//                 DoctorInformationData : DoctorInformationData,
+//             },
+//             "Patient Profile Data sended Successfully!!!"
+//             )
+//         )
+//     }
+// }
+
+
+const getDoctorData = async (req, res) => {
+    const userId = req.user?._id;
+
+    if (!userId) {
+        throw new ApiError(400, "User Id is required");
+    }
+
+    // Fetch all doctor data and populate the doctor name from the User table
+    const DoctorInformationData = await DoctorInformation.find()
+        .select("-cnicNumber -phoneNumber -homeAddress -DOB -city -nationality -createdAt -updatedAt") // Exclude unnecessary fields
+        .populate({
+            path: 'userId', // the reference to the 'User' model
+            select: 'fullName' // only include the full name of the doctor
+        });
+
+    console.log("This si ok to see ", DoctorInformationData);
+
+    if (DoctorInformationData) {
+        return res
+            .status(201)
+            .json(
+                new ApiResponse(201, {
+                    DoctorInformationData: DoctorInformationData,
+                },
+                    "Patient Profile Data sent Successfully!!!"
+                )
+            );
+    }
+};
+
+
+
+
+
+
 export {
     insertPatentDetails,
-    getPatientProfileData
+    getPatientProfileData,
+    getDoctorData
 }

@@ -13,7 +13,7 @@ const router = Router();
 router.route("/get-doctor-profile-Details").get(verifyJWT , isDoctorAuth ,  getDoctorProfileData)
 
 
-router.route("/insert-doctor-Details").patch(verifyJWT , isDoctorAuth ,  getDoctorProfileData)
+router.route("/insert-doctor-Details").patch(verifyJWT , isDoctorAuth ,  insertDoctorDetails)
 router.route("/set-doctor-schedule").patch(verifyJWT , isDoctorAuth ,  setDoctorSchedule)
 
 
