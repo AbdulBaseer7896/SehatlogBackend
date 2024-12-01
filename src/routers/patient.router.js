@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
-import { getDoctorData, getPatientProfileData, insertPatentDetails } from "../controllers/Patient.Controller/patient.controller.js";
+import { getDoctorData, getDoctorScheduleData, getPatientProfileData, insertPatentDetails } from "../controllers/Patient.Controller/patient.controller.js";
 import {isPatientAuth} from "../middlewares/isPatientAuth.middleware.js"
 import { getPatientVaccinationData, insertVaccinationData } from "../controllers/Patient.Controller/vaccination.controller.js";
 import {upload} from "../middlewares/multer.middleware.js"
@@ -23,6 +23,7 @@ router.route("/get-patient-report-Details").get(verifyJWT , getPatientReportData
 router.route("/get-patient-vaccination-Details").get(verifyJWT , getPatientVaccinationData)
 router.route("/get-patient-hospital-Details").get(verifyJWT , getPatientHospitalData)
 router.route("/get-doctor-data").get(verifyJWT , getDoctorData)
+router.route("/get-doctor-schedule-data/:doctorId").get(verifyJWT, getDoctorScheduleData);
 
 
 router.route("/insert-patient-Details").patch(verifyJWT, isPatientAuth ,  insertPatentDetails)

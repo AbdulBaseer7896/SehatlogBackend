@@ -113,9 +113,50 @@ const getDoctorProfileData = async (req, res) => {
 
 
 
+// const setDoctorSchedule = asyncHandler(async (req, res) => {
+//     const { clinics } = req.body;
+//     const doctorId = req.user?._id;
+//     console.log("this si the doctorId = " + doctorId)
+//     console.log("this si the clincic data = " + clinics)
+
+//     // Validate the presence of clinics
+//     if (!clinics || !Array.isArray(clinics) || clinics.length === 0) {
+//         throw new ApiError(401, "Clinics data is required and should be an array");
+//     }
+
+//     // Validate each clinic's structure
+//     clinics.forEach((clinic, index) => {
+//         if (!clinic.name || !clinic.location || !clinic.days || !clinic.timing || !clinic.timing.start || !clinic.timing.end) {
+//             throw new ApiError(400, `Clinic at index ${index} is missing required fields`);
+//         }
+//         if (!Array.isArray(clinic.days)) {
+//             throw new ApiError(400, `Days for clinic at index ${index} must be an array`);
+//         }
+//         clinic.breaks?.forEach((breakTime, breakIndex) => {
+//             if (!breakTime.start || !breakTime.end) {
+//                 throw new ApiError(400, `Break at index ${breakIndex} in clinic ${index} is missing start or end time`);
+//             }
+//         });
+//     });
+
+//     // Upsert the schedule (create if not exists, update if exists)
+//     const schedule = await DoctorSchedule.findOneAndUpdate(
+//         { doctorId },
+//         { clinics },
+//         { upsert: true, new: true }
+//     );
+
+//     return res.status(200).json(new ApiResponse(200, schedule, "Doctor schedule set successfully"));
+// });
+
+
 const setDoctorSchedule = asyncHandler(async (req, res) => {
-    const { clinics, maxAppointmentsPerDay } = req.body;
+    const { clinics } = req.body;
     const doctorId = req.user?._id;
+
+    console.log("Received doctorId:", doctorId);
+    console.log("Received clinics data:", JSON.stringify(clinics, null, 2));
+    console.log("Received clinics data:", JSON.stringify(clinics[0].slotTime, null, 2));
 
     // Validate the presence of clinics
     if (!clinics || !Array.isArray(clinics) || clinics.length === 0) {
@@ -124,23 +165,25 @@ const setDoctorSchedule = asyncHandler(async (req, res) => {
 
     // Validate each clinic's structure
     clinics.forEach((clinic, index) => {
-        if (!clinic.name || !clinic.location || !clinic.days || !clinic.timing || !clinic.timing.start || !clinic.timing.end) {
+        if (!clinic?.name || !clinic?.clinicAddress || !clinic?.slotTime || !Array.isArray(clinic?.days) || 
+            !clinic?.timing?.start || !clinic?.timing?.end) {
+            console.error(`Invalid clinic at index ${index}:`, clinic);
             throw new ApiError(400, `Clinic at index ${index} is missing required fields`);
         }
-        if (!Array.isArray(clinic.days)) {
-            throw new ApiError(400, `Days for clinic at index ${index} must be an array`);
-        }
+
+        // Validate each break's structure
         clinic.breaks?.forEach((breakTime, breakIndex) => {
-            if (!breakTime.start || !breakTime.end) {
+            if (!breakTime?.start || !breakTime?.end) {
+                console.error(`Invalid break at index ${breakIndex} in clinic ${index}:`, breakTime);
                 throw new ApiError(400, `Break at index ${breakIndex} in clinic ${index} is missing start or end time`);
             }
         });
     });
 
-    // Upsert the schedule (create if not exists, update if exists)
+    // Upsert the schedule
     const schedule = await DoctorSchedule.findOneAndUpdate(
         { doctorId },
-        { clinics, maxAppointmentsPerDay },
+        { clinics },
         { upsert: true, new: true }
     );
 

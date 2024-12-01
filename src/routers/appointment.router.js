@@ -12,8 +12,14 @@ const router = Router();
 
 
 // secured routes
-router.route("/appointment-booking").post(verifyJWT , isPatientAuth ,  appointmentBooking)
+// router.route("/appointment-booking").post(verifyJWT , isPatientAuth ,  appointmentBooking)
 
+
+
+router.route("/appointment-booking").post(verifyJWT, isPatientAuth ,
+    upload.array("documents"),
+    appointmentBooking
+)
 
 
 export default router

@@ -138,7 +138,7 @@ const DoctorScheduleSchema = new mongoose.Schema({
                 type: String,
                 required: true
             },
-            location: {
+            clinicAddress: { // Updated from location to clinicAddress
                 type: String,
                 required: true
             },
@@ -149,46 +149,43 @@ const DoctorScheduleSchema = new mongoose.Schema({
             },
             timing: {
                 start: {
-                    type: String, // e.g., "09:00"
-                    validate: {
-                        validator: (v) => /^([01]\d|2[0-3]):([0-5]\d)$/.test(v),
-                        message: props => `${props.value} is not a valid 24-hour format time (HH:mm)`
-                    },
+                    type: String,
                     required: true
                 },
                 end: {
-                    type: String, // e.g., "17:00"
-                    validate: {
-                        validator: (v) => /^([01]\d|2[0-3]):([0-5]\d)$/.test(v),
-                        message: props => `${props.value} is not a valid 24-hour format time (HH:mm)`
-                    },
+                    type: String,
                     required: true
                 }
             },
             breaks: [
                 {
                     start: {
-                        type: String, // e.g., "12:00"
-                        validate: {
-                            validator: (v) => /^([01]\d|2[0-3]):([0-5]\d)$/.test(v),
-                            message: props => `${props.value} is not a valid 24-hour format time (HH:mm)`
-                        }
+                        type: String,
+                        required: true
                     },
                     end: {
-                        type: String, // e.g., "13:00"
-                        validate: {
-                            validator: (v) => /^([01]\d|2[0-3]):([0-5]\d)$/.test(v),
-                            message: props => `${props.value} is not a valid 24-hour format time (HH:mm)`
-                        }
+                        type: String,
+                        required: true
+                    }
+                }
+            ],
+            slotTime:{
+                type: Number,
+            },
+            bookedSlots: [
+                {
+                    date: {
+                        type: Date,
+                        required: true
+                    },
+                    time: {
+                        type: String,
+                        required: true
                     }
                 }
             ]
         }
     ],
-    maxAppointmentsPerDay: {
-        type: Number,
-        default: 20
-    }
 });
 
 

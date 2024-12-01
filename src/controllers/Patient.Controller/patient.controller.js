@@ -2,7 +2,7 @@ import { asyncHandler } from "../../utils/asyncHandler.js";
 import { ApiError } from "../../utils/ApiError.js";
 import {PatientInformation} from "../../models/patient.model.js"
 import { ApiResponse } from "../../utils/ApiResponse.js"
-import { DoctorInformation } from "../../models/doctor.model.js";
+import { DoctorInformation, DoctorSchedule } from "../../models/doctor.model.js";
 
 
 
@@ -169,6 +169,7 @@ const getPatientProfileData = async (req, res) => {
 
 
 
+
 // const getDoctorData = async (req, res) => {
 //     const userId = req.user?._id
 
@@ -225,6 +226,47 @@ const getDoctorData = async (req, res) => {
 };
 
 
+const getDoctorScheduleData = async (req, res) => {
+    const userId = req.user?._id; // Extract user ID from the JWT payload
+    const doctorId = req.params.doctorId; // Extract doctorId from the route parameters
+
+    console.log("this is the data = 1 , " , doctorId)
+
+    if (!userId) {
+        throw new ApiError(400, "User Id is required");
+    }
+
+    if (!doctorId) {
+        throw new ApiError(400, "Doctor Id is required");
+    }
+
+    try {
+        const DoctorScheduleData = await DoctorSchedule.findOne({ doctorId });
+        console.log("Thisis the data sdgfasd  = " , DoctorScheduleData)
+
+        if (DoctorScheduleData) {
+            return res
+                .status(201)
+                .json(
+                    new ApiResponse(
+                        201,
+                        {
+                            DoctorScheduleData: DoctorScheduleData,
+                        },
+                        "Doctor Schedule  Data sent successfully!!!"
+                    )
+                );
+        } else {
+            throw new ApiError(404, "Doctor Schedule data not found");
+        }
+    } catch (error) {
+        console.error("Error fetching doctor schedule data:", error);
+        return res.status(500).json(new ApiError(500, "Internal server error"));
+    }
+};
+
+
+
 
 
 
@@ -232,5 +274,6 @@ const getDoctorData = async (req, res) => {
 export {
     insertPatentDetails,
     getPatientProfileData,
-    getDoctorData
+    getDoctorData,
+    getDoctorScheduleData
 }
