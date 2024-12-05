@@ -30,8 +30,6 @@ const insertDoctorDetails = asyncHandler(async (req, res) => {
 
     const userId = req.user._id;
 
-    console.log("this is the user =", req.user);
-
     if (!userId) {
         throw new ApiError(401, "Not authenticated request token");
     }
@@ -92,11 +90,8 @@ const getDoctorProfileData = async (req, res) => {
         throw new ApiError(400, "User Id Is required")
     }
 
-    console.log("this si 2324")
 
     const DoctorProfileData = await DoctorInformation.findOne({ userId });
-
-    console.log("this si the DoctorProfileData =  " + DoctorProfileData)
 
     if(DoctorProfileData){
         return res
