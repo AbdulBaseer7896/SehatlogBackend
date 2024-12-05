@@ -33,6 +33,7 @@ app.use('/api/v1/users', userRouter);
 app.use('/api/v1/patient', patientRouter);
 app.use('/api/v1/doctor', doctorRouter);
 app.use('/api/v1/patient/appointment', appointmentRouter);
+app.use('/api/v1/doctor/appointment', appointmentRouter);
 
 
 // Error handling middleware

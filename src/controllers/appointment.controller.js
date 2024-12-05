@@ -1,3 +1,6 @@
+
+
+
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -5,209 +8,9 @@ import { Appointment } from "../models/appointment.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { DoctorSchedule } from "../models/doctor.model.js";
 
-
-// const appointmentBooking = asyncHandler(async (req , res)=>{
-//     const { 
-//         doctorId,
-//         appointmentDate,
-//         appointmentTime,
-//         reason,
-//         symptoms,
-//         medication,
-//         diagnosis,
-//         prescription,
-//         comments,
-//         notes
-//      } = req.body
-
-//     const patientId = req.user._id
-
-//     if(!patientId){
-//         throw new ApiError(409, "unauthorized request")
-//     }
-
-
-//     // const checkAppointmentSlot = await DoctorInformation.findOne({
-//     //     $and:[{appointmentDate} , {appointmentTime}]
-//     // })
-
-//     const checkAppointmentSlot = await Appointment.findOne({
-//         doctorId,
-//         appointmentDate,
-//         appointmentTime
-//     });
-    
-
-//     if(checkAppointmentSlot){
-//         throw new ApiError(409, "Slot already booked for the given date and time")
-//     }
-
-//     const documentLocalPath = req.files?.document[0]?.path || "";
-//     // const documentLocalPath = req.files?.["document"]?.[0]?.path || "";
-
-//      // Validate inputs
-//     if(!patientId ||!doctorId || !appointmentDate || !appointmentTime ){
-//         throw new ApiError(400, "All fields are required")
-//     }
-
-
-//     const documentImage = await uploadOnCloudinary(documentLocalPath)
-
-
-//     const appointment = await Appointment.create({
-//         doctorId,
-//         patientId,
-//         appointmentDate,
-//         appointmentTime,
-//         reason,
-//         symptoms,
-//         medication,
-//         diagnosis,
-//         prescription,
-//         comments,
-//         notes,
-//         documentImage: documentImage?.url || "",
-//     })
-
-//     const addAppointment = await Appointment.findById(appointment._id)
-//     if(!addAppointment) {
-//         throw new ApiError(500 , "Something went wrong while appointment booking!!")
-//     }
-
-//     return res.status(201).json(
-//         new ApiResponse(200, addAppointment , "Appointment booked Successfully!!!")
-//     )
-
-// })
-
-
-
-
-//     const appointmentBooking = asyncHandler(async (req , res)=>{
-//     const {clinicName , doctorId } = req.body;
-//     const patientId = req.user?._id;
-
-//     console.log('hello 1 ')
-
-//     console.log("this is the req.body" , req.body);
-//     console.log(clinicName, doctorId)
-//     if (!doctorId || !clinicId || !date || !time || !reason || !patientId) {
-//         return res.status(400).json({ message: "All fields are required" });
-//     }
-
-    
-
-//     try {
-//         // Check if slot is already booked
-//         const doctorSchedule = await DoctorSchedule.findOne({
-//             doctorId,
-//             // "clinics._id": clinicId,
-//             "clinics.bookedSlots": { $elemMatch: { date, time } }
-//         });
-
-//         console.log('hello 2 ')
-
-
-//         if (doctorSchedule) {
-//             return res.status(400).json({ message: "Slot already booked" });
-//         }
-
-//         // Add the booked slot to the DoctorSchedule
-//         await DoctorSchedule.updateOne(
-//             { doctorId },
-//             { $push: { "clinics.$.bookedSlots": { date, time } } }
-//         );
-
-//         console.log('hello 3 ')
-
-
-//         // Create an appointment in the Appointment collection
-//         const appointment = new Appointment({
-//             doctorId,
-//             patientId,
-//             appointmentDate: date,
-//             appointmentTime: time,
-//             reason,
-//             status: "scheduled"
-//         });
-
-//         await appointment.save();
-
-//         return res.status(201).json({ message: "Appointment booked successfully" });
-//     } catch (error) {
-//         console.error("Error booking appointment:", error);
-//         res.status(500).json({ message: "Internal server error" });
-//     }
-// });
-
-
-
-
-// const appointmentBooking = asyncHandler(async (req, res) => {
-//     const { clinicName, doctorId, date, slot, reason, symptoms, medication, notes } = req.body;
-//     const patientId = req.user?._id;
-
-//     console.log('hello 1');
-
-//     console.log("this is the req.body", req.body);
-//     console.log(clinicName, doctorId);
-
-//     // Check if all required fields are present
-//     if (!doctorId || !clinicName || !date || !slot || !reason || !patientId) {
-//         return res.status(400).json({ message: "All fields are required" });
-//     }
-
-//     try {
-//         // Check if the slot is already booked for the doctor
-//         const doctorSchedule = await DoctorSchedule.findOne({
-//             doctorId,
-//             "clinics.name": clinicName,  // Use clinicName instead of clinicId
-//             "clinics.bookedSlots": { $elemMatch: { date, slot } }
-//         });
-
-//         console.log('hello 2');
-
-//         if (doctorSchedule) {
-//             return res.status(400).json({ message: "Slot already booked" });
-//         }
-
-//         // Add the booked slot to the DoctorSchedule
-//         await DoctorSchedule.updateOne(
-//             { doctorId, "clinics.name": clinicName },  // Use clinicName here as well
-//             { $push: { "clinics.$.bookedSlots": { date, slot } } }
-//         );
-
-//         console.log('hello 3');
-
-//         // Create an appointment in the Appointment collection
-//         const appointment = new Appointment({
-//             doctorId,
-//             patientId,
-//             appointmentDate: date,
-//             appointmentTime: slot,  // Use slot here
-//             reason,
-//             symptoms,
-//             medication,
-//             notes,
-//             status: "scheduled"
-//         });
-
-//         await appointment.save();
-
-//         return res.status(201).json({ message: "Appointment booked successfully" });
-//     } catch (error) {
-//         console.error("Error booking appointment:", error);
-//         res.status(500).json({ message: "Internal server error" });
-//     }
-// });
-
-
 const appointmentBooking = asyncHandler(async (req, res) => {
     const { clinicName, doctorId, date, slot, reason, symptoms, medication, notes } = req.body;
     const patientId = req.user?._id;
-    console.log('hello 1');
-
-    console.log(clinicName, doctorId, date, slot, reason, symptoms, medication, notes);
 
     // Extract startTime and endTime from the slot (e.g., "14:13 - 14:26")
     const [startTime, endTime] = slot.split(" - ");
@@ -251,19 +54,9 @@ const appointmentBooking = asyncHandler(async (req, res) => {
         // Save the appointment
         await appointment.save();
 
-        // return res.status(201).json({ message: "Appointment booked successfully" });
-
-        // if(appointment){
-            return res
-            .status(201)
-            .json(
-                new ApiResponse(201, {
-                    appointment : appointment,
-                },
-                "you Appointment is Booked sended Successfully!!!"
-                )
-            )
-        // }
+        return res.status(201).json(
+            new ApiResponse(201, { appointment: appointment }, "Your appointment has been booked successfully!")
+        );
     } catch (error) {
         console.error("Error booking appointment:", error);
         res.status(500).json({ message: "Internal server error" });
@@ -273,7 +66,59 @@ const appointmentBooking = asyncHandler(async (req, res) => {
 
 
 
+const updateAppointmentData = asyncHandler(async (req, res) => {
+    let { status, comments, documentPath,  medications, prescriptions, diagnoses, appointmentId } = req.body;
+
+    const AppointmentPics = [];
+    if (req.files) {
+        // If files are uploaded, process them
+        for (const file of req.files) {
+            const uploadedImage = await uploadOnCloudinary(file.path);
+            if (uploadedImage?.url) {
+                AppointmentPics.push(uploadedImage.url); // Push image URL to array
+            }
+        }
+    }
+
+    // Validate that appointmentId is provided
+    if (!appointmentId) {
+        return res.status(400).json({ message: "Appointment ID is required" });
+    }
+
+    try {
+        // Find the appointment by appointmentId and update the fields
+        const updatedAppointment = await Appointment.findByIdAndUpdate(
+            appointmentId,
+            {
+                $set: {
+                    ...(status && { status }),
+                    ...(comments && { comments }),
+                    ...(AppointmentPics && { documentPath: AppointmentPics }),  // Store the array of file paths
+                    ...(medications && { medication: medications }),
+                    ...(prescriptions && { prescription: prescriptions }),
+                    ...(diagnoses && { diagnosis: diagnoses })
+                }
+            },
+            { new: true } // Return the updated document
+        );
+
+        // Check if the appointment was found and updated
+        if (!updatedAppointment) {
+            return res.status(404).json({ message: "Appointment not found" });
+        }
+
+        // Respond with the updated appointment data
+        return res.status(200).json(
+            new ApiResponse(200, { appointment: updatedAppointment }, "Appointment updated successfully")
+        );
+    } catch (error) {
+        console.error("Error updating appointment:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
+
 
 export { 
     appointmentBooking,
-}
+    updateAppointmentData
+};

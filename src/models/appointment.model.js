@@ -105,10 +105,10 @@ const AppointmentSchema = new Schema({
         type: [String]
     },
     diagnosis: {
-        type: String
+        type: [String]
     },
     prescription: {
-        type: String
+        type: [String]
     },
     comments: {
         type: String
@@ -117,7 +117,7 @@ const AppointmentSchema = new Schema({
         type: String
     },
     documentPath: {
-        type: String
+        type: [String]
     },
     status: {
         type: String,

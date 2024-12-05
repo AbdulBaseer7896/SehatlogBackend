@@ -3,7 +3,8 @@ import { getCurrentUser, refreshAccessToken,  updateAccountDetails} from "../con
 import {upload} from "../middlewares/multer.middleware.js"
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { isPatientAuth } from "../middlewares/isPatientAuth.middleware.js";
-import {appointmentBooking} from "../controllers/appointment.controller.js"
+import {appointmentBooking, updateAppointmentData} from "../controllers/appointment.controller.js"
+import { isDoctorAuth } from "../middlewares/isDoctorAuth.model.js";
 
 
 const router = Router();
@@ -15,11 +16,9 @@ const router = Router();
 // router.route("/appointment-booking").post(verifyJWT , isPatientAuth ,  appointmentBooking)
 
 
-
-router.route("/appointment-booking").post(verifyJWT, isPatientAuth ,
-    upload.array("documents"),
-    appointmentBooking
+router.route("/update-patient-appointment-by-doctor/:appointmentId").patch(verifyJWT, isDoctorAuth ,
+    upload.array("documentPath"),
+    updateAppointmentData
 )
-
 
 export default router
