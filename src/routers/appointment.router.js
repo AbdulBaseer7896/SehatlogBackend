@@ -13,7 +13,11 @@ const router = Router();
 
 
 // secured routes
-router.route("/appointment-booking").post(verifyJWT , isPatientAuth ,  appointmentBooking)
+router.route("/appointment-booking").post(verifyJWT, isPatientAuth ,
+    upload.array("documentPath"),
+    appointmentBooking
+)
+
 
 
 router.route("/update-patient-appointment-by-doctor/:appointmentId").patch(verifyJWT, isDoctorAuth ,
