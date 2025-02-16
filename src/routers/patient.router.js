@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
-import { getDoctorData, getDoctorScheduleData, getPatientProfileData, insertPatentDetails } from "../controllers/Patient.Controller/patient.controller.js";
+import { addFavoritesDoctor, getDoctorData, getDoctorScheduleData, getFavoritesDoctor, getPatientProfileData, insertPatentDetails, removeFavoritesDoctor } from "../controllers/Patient.Controller/patient.controller.js";
 import {isPatientAuth} from "../middlewares/isPatientAuth.middleware.js"
 import { getPatientVaccinationData, insertVaccinationData } from "../controllers/Patient.Controller/vaccination.controller.js";
 import {upload} from "../middlewares/multer.middleware.js"
@@ -24,9 +24,12 @@ router.route("/get-patient-vaccination-Details").get(verifyJWT , getPatientVacci
 router.route("/get-patient-hospital-Details").get(verifyJWT , getPatientHospitalData)
 router.route("/get-doctor-data").get(verifyJWT , getDoctorData)
 router.route("/get-doctor-schedule-data/:doctorId").get(verifyJWT, getDoctorScheduleData);
+router.route("/getFavoritesDoctor").get(verifyJWT , getFavoritesDoctor)
 
 
 router.route("/insert-patient-Details").patch(verifyJWT, isPatientAuth ,  insertPatentDetails)
+router.route("/favorites/add").patch(verifyJWT, isPatientAuth ,  addFavoritesDoctor)
+router.route("/favorites/remove").patch(verifyJWT, isPatientAuth ,  removeFavoritesDoctor)
 
 router.route("/insert-Vaccines-Details").post(verifyJWT, isPatientAuth ,
     upload.array("vaccinePic"),

@@ -74,6 +74,10 @@ const PatientSchema = new Schema({
     emergencyContactNumberSecondary: {
         type: String,
     },
+    MyDoctorList: {
+        type: [String], // Updated to array of strings
+        default: [] 
+    },
 }, { timestamps: true });
 
 

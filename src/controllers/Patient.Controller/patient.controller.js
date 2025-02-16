@@ -241,7 +241,8 @@ const getDoctorScheduleData = async (req, res) => {
     }
 
     try {
-        const DoctorScheduleData = await DoctorSchedule.findOne({ doctorId });
+        console.log("This is the doctor id  = " , doctorId)
+        const DoctorScheduleData = await DoctorSchedule.findOne({ doctorId :doctorId  });
         console.log("Thisis the data sdgfasd  = " , DoctorScheduleData)
 
         if (DoctorScheduleData) {
@@ -267,6 +268,48 @@ const getDoctorScheduleData = async (req, res) => {
 
 
 
+// Patient routes
+
+// router.put('/favorites/add', auth, async (req, res) => {
+const addFavoritesDoctor = async (req, res) => {
+    try {
+        console.log("User ID:", req.user._id);
+        console.log("User ID:", req.body.doctorId);
+
+        const patient = await PatientInformation.findOneAndUpdate(
+            { userId: req.user._id },
+            { $addToSet: { MyDoctorList: req.body.doctorId } },
+            { new: true }
+        );
+        res.json({ success: true, data: patient });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+};
+// router.put('/favorites/remove', auth, async (req, res) => {
+    const removeFavoritesDoctor = async (req, res) => {
+    try {
+        const patient = await PatientInformation.findOneAndUpdate(
+            { userId: req.user._id },
+            { $pull: { MyDoctorList: req.body.doctorId } },
+            { new: true }
+        );
+        res.json({ success: true, data: patient });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+};
+
+// router.get('/me', auth, async (req, res) => {
+    const getFavoritesDoctor = async (req, res) => {
+    try {
+        const patient = await PatientInformation.findOne({ userId: req.user._id });
+        console.log("This is patient", patient)
+        res.json({ success: true, data: patient });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+};
 
 
 
@@ -275,5 +318,8 @@ export {
     insertPatentDetails,
     getPatientProfileData,
     getDoctorData,
-    getDoctorScheduleData
+    getDoctorScheduleData,
+    addFavoritesDoctor,
+    removeFavoritesDoctor,
+    getFavoritesDoctor
 }
