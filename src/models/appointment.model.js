@@ -34,7 +34,8 @@ const AppointmentSchema = new Schema({
         }
     },
     reason: {
-        type: String,
+        // type: String,
+        type: [String],
         required: true
     },
     symptoms: {

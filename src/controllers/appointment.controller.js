@@ -197,7 +197,36 @@ const updateAppointmentData = asyncHandler(async (req, res) => {
 });
 
 
+
+const getPatienAppointmentData = asyncHandler(async (req, res) => {
+    console.log("its working")
+    const userId = req.user?._id
+    console.log("Yhi is is user id = " , userId)
+
+    if(!userId){
+        throw new ApiError(400, "User Id Is required")
+    }
+
+
+    // const PatientReportData = await report.findOne({ userId });
+    const PatientAppointmentData = await Appointment.find({ patientId: userId });
+
+
+    if(PatientAppointmentData){
+        return res
+        .status(201)
+        .json(
+            new ApiResponse(201, {
+                PatientAppointmentData : PatientAppointmentData,
+            },
+            "Patient Appointment Data sended Successfully!!!"
+            )
+        )
+    }
+})
+
 export { 
     appointmentBooking,
-    updateAppointmentData
+    updateAppointmentData,
+    getPatienAppointmentData
 };

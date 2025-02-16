@@ -3,13 +3,16 @@ import { getCurrentUser, refreshAccessToken,  updateAccountDetails} from "../con
 import {upload} from "../middlewares/multer.middleware.js"
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { isPatientAuth } from "../middlewares/isPatientAuth.middleware.js";
-import {appointmentBooking, updateAppointmentData} from "../controllers/appointment.controller.js"
+import {appointmentBooking, getPatienAppointmentData, updateAppointmentData} from "../controllers/appointment.controller.js"
 import { isDoctorAuth } from "../middlewares/isDoctorAuth.model.js";
 
 
 const router = Router();
 
 // router.route("/login").post(loginUser)
+
+
+router.route("/getPatientAppointmentData").get(verifyJWT , getPatienAppointmentData)
 
 
 // secured routes
