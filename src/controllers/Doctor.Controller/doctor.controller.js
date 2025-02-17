@@ -148,6 +148,8 @@ const setDoctorSchedule = asyncHandler(async (req, res) => {
 });
 
 
+
+
 export {
     insertDoctorDetails,
     setDoctorSchedule,

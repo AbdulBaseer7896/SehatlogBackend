@@ -225,8 +225,13 @@ const getPatienAppointmentData = asyncHandler(async (req, res) => {
     }
 })
 
+
+
+    // router.get('/:appointmentId', auth, async (req, res) =>
+
+
 export { 
     appointmentBooking,
     updateAppointmentData,
-    getPatienAppointmentData
+    getPatienAppointmentData,
 };

@@ -5,7 +5,7 @@ import {isPatientAuth} from "../middlewares/isPatientAuth.middleware.js"
 import { getPatientVaccinationData, insertVaccinationData } from "../controllers/Patient.Controller/vaccination.controller.js";
 import {upload} from "../middlewares/multer.middleware.js"
 import { addHospitalRecord, getPatientHospitalData } from "../controllers/Patient.Controller/hospitalRecord.controller.js";
-import { addPrescriptionRecord } from "../controllers/Patient.Controller/prescription.controller.js";
+import { addPrescriptionRecord, getPrescriptionRecord } from "../controllers/Patient.Controller/prescription.controller.js";
 import { addReportRecord, getPatientReportData } from "../controllers/Patient.Controller/report.controller.js"
 
 const router = Router();
@@ -25,6 +25,8 @@ router.route("/get-patient-hospital-Details").get(verifyJWT , getPatientHospital
 router.route("/get-doctor-data").get(verifyJWT , getDoctorData)
 router.route("/get-doctor-schedule-data/:doctorId").get(verifyJWT, getDoctorScheduleData);
 router.route("/getFavoritesDoctor").get(verifyJWT , getFavoritesDoctor)
+router.route("/getPrescriptionRecord").get(verifyJWT , getPrescriptionRecord)
+
 
 
 router.route("/insert-patient-Details").patch(verifyJWT, isPatientAuth ,  insertPatentDetails)

@@ -18,14 +18,16 @@ router.route("/get-patient-appointment-data").get(verifyJWT , isDoctorAuth ,  ge
 router.route("/get-patient-profile-Details-to-view-in-appointment/:patientId").get(verifyJWT , isDoctorAuth ,  getPatientProfileDataToViewInAppointment)
 
 
+
 router.route("/insert-doctor-Details").patch(verifyJWT , isDoctorAuth ,  insertDoctorDetails)
 router.route("/set-doctor-schedule").patch(verifyJWT , isDoctorAuth ,  setDoctorSchedule)
+// router.route("/updataAppointmentStatus").patch(verifyJWT , isDoctorAuth ,  updataAppointmentStatus)
 
 
-// router.route("/update-patient-appointment-by-doctor/:appointmentId").patch(verifyJWT, isDoctorAuth ,
-//     // upload.array("uploadedFiles"),
-//     updateAppointmentData
-// )
+router.route("/update-patient-appointment-by-doctor/:appointmentId").patch(verifyJWT, isDoctorAuth ,
+    upload.array("uploadedFiles"),
+    updateAppointmentData
+)
 // router.route("/update-patient-appointment-by-doctor/:appointmentId").patch(verifyJWT , isDoctorAuth ,  setDoctorSchedule)
 
 
