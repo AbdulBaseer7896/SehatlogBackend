@@ -8,7 +8,6 @@ import jwt from "jsonwebtoken"
 export const isPatientAuth = asyncHandler(async(req , res , next)=>{
     console.log("This is patient Auth ")
     try {
-
         // const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "");
 
         const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer " , "")
@@ -32,7 +31,7 @@ export const isPatientAuth = asyncHandler(async(req , res , next)=>{
             throw new ApiError(401 ,"Not authenticated request token")
         }
 
-        if(user.userRole !== "Patient"){
+        if(user.userRole !== "Patient" && user.userRole !== "FamilyMember"){
             throw new ApiError(403 ,"Unauthorized to access this route just patient allowed")
         }
         req.user = user

@@ -5,15 +5,15 @@ import bcrypt from "bcrypt";
 const userSchema = new Schema({
     phone: {
         type:String,
-        required: [true, "Please enter a phone"],
-        unique: true,
+        // required: [true, "Please enter a phone"],
+        // unique: true,
         // lowercase: true,
         trim:true,
         // index:true
     },
     email: {
         type:String,
-        required: [true, "Please enter a email"],
+        required: [true, "Please enter a emails"],
         unique: true,
         lowercase: true,
         trim:true,
@@ -32,7 +32,7 @@ const userSchema = new Schema({
     userRole: {
         type:String,
         required: [true, "Please enter a User Role"],
-        enum: ["Doctor", "Patient"],
+        enum: ["Doctor", "Patient" , "FamilyMember"],
     },
     avatar: {
         type: String    

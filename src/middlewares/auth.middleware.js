@@ -77,7 +77,6 @@ import jwt from "jsonwebtoken"
 
 
 
-
 export const verifyJWT = asyncHandler(async (req, res, next) => {
     try {
         // Check for token in cookies or Authorization header
