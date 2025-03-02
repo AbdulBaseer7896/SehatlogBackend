@@ -7,7 +7,7 @@ import {upload} from "../middlewares/multer.middleware.js"
 import { addHospitalRecord, getPatientHospitalData } from "../controllers/Patient.Controller/hospitalRecord.controller.js";
 import { addPrescriptionRecord, getPrescriptionRecord } from "../controllers/Patient.Controller/prescription.controller.js";
 import { addReportRecord, getPatientReportData } from "../controllers/Patient.Controller/report.controller.js"
-import { addFamilyMember, getFamilyMemberData, switchToFamilyMember } from "../controllers/Patient.Controller/myFamily.controller.js";
+import { addFamilyMember, getFamilyMemberData, switchToFamilyMember, switchToPersonal } from "../controllers/Patient.Controller/myFamily.controller.js";
 
 const router = Router();
 
@@ -36,6 +36,7 @@ router.route("/favorites/add").patch(verifyJWT, isPatientAuth ,  addFavoritesDoc
 router.route("/favorites/remove").patch(verifyJWT, isPatientAuth ,  removeFavoritesDoctor)
 
 
+router.route("/switch-to-personal").post(verifyJWT, switchToPersonal);
 router.route("/switch-profile").post(verifyJWT, switchToFamilyMember);
 router.route("/insert-Vaccines-Details").post(verifyJWT, isPatientAuth ,
     upload.array("vaccinePic"),
