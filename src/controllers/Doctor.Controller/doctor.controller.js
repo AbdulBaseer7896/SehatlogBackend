@@ -1,8 +1,12 @@
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { ApiError } from "../../utils/ApiError.js";
-import { DoctorInformation , DoctorSchedule } from "../../models/doctor.model.js";
+import { DoctorInformation, DoctorSchedule } from "../../models/doctor.model.js";
 import { ApiResponse } from "../../utils/ApiResponse.js";
-
+import mongoose from 'mongoose';
+import { sharedRecord } from "../../models/shareRecords.model.js";
+import { report } from "../../models/report.model.js";
+import { prescription } from "../../models/prescription.model.js";
+import { vaccination } from "../../models/Vaccines.model.js";
 
 const insertDoctorDetails = asyncHandler(async (req, res) => {
     const {
@@ -86,23 +90,23 @@ const insertDoctorDetails = asyncHandler(async (req, res) => {
 const getDoctorProfileData = async (req, res) => {
     const userId = req.user?._id
 
-    if(!userId){
+    if (!userId) {
         throw new ApiError(400, "User Id Is required")
     }
 
 
     const DoctorProfileData = await DoctorInformation.findOne({ userId });
 
-    if(DoctorProfileData){
+    if (DoctorProfileData) {
         return res
-        .status(201)
-        .json(
-            new ApiResponse(201, {
-                DoctorProfileData : DoctorProfileData,
-            },
-            "Doctor Profile Data sended Successfully!!!"
+            .status(201)
+            .json(
+                new ApiResponse(201, {
+                    DoctorProfileData: DoctorProfileData,
+                },
+                    "Doctor Profile Data sended Successfully!!!"
+                )
             )
-        )
     }
 }
 
@@ -122,7 +126,7 @@ const setDoctorSchedule = asyncHandler(async (req, res) => {
 
     // Validate each clinic's structure
     clinics.forEach((clinic, index) => {
-        if (!clinic?.name || !clinic?.clinicAddress || !clinic?.slotTime || !Array.isArray(clinic?.days) || 
+        if (!clinic?.name || !clinic?.clinicAddress || !clinic?.slotTime || !Array.isArray(clinic?.days) ||
             !clinic?.timing?.start || !clinic?.timing?.end) {
             console.error(`Invalid clinic at index ${index}:`, clinic);
             throw new ApiError(400, `Clinic at index ${index} is missing required fields`);
@@ -148,10 +152,87 @@ const setDoctorSchedule = asyncHandler(async (req, res) => {
 });
 
 
+const getSharedRecordsByDoctor = async (req, res) => {
+    try {
+        console.log("this is printed")
+        //   const { doctorId } = req.params;
+        const doctorId = req.user?._id;
+        console.log("This is doctor is = " , doctorId)
+        // const DoctorUserId = await DoctorInformation.findOne({doctorId})
+        const DoctorUserId = await DoctorInformation.findOne(
+            { userId : doctorId },
+            { _id: 1 }
+          );
+          
+        console.log("This is the user id = " , DoctorUserId)
+        const sharedRecords = await sharedRecord.find({ doctorId : DoctorUserId });
+        console.log("This is the shard records = " , sharedRecords)
 
+        if (!sharedRecords.length) {
+            return res.status(404).json({ message: 'No shared records found' });
+        }
+
+        // // Extract all document IDs from shared records
+        const extractIds = (arr) =>
+            arr.flatMap(record =>
+                record.map(doc => new mongoose.Types.ObjectId(doc._id))
+            );
+
+        // // Get all IDs from different categories
+        const reportIds = extractIds(sharedRecords.map(r => r.reportsData));
+        const prescriptionIds = extractIds(sharedRecords.map(r => r.prescriptionsData));
+        const upcomingVaccIds = extractIds(sharedRecords.map(r => r.upcomingVaccinationsData));
+        const completedVaccIds = extractIds(sharedRecords.map(r => r.completedVaccinationsData));
+
+        // Fetch actual documents in parallel
+        const [
+            reports,
+            prescriptions,
+            upcomingVaccinations,
+            completedVaccinations
+        ] = await Promise.all([
+            report.find({ _id: { $in: reportIds } }),
+            prescription.find({ _id: { $in: prescriptionIds } }),
+            vaccination.find({ _id: { $in: upcomingVaccIds } }),
+            vaccination.find({ _id: { $in: completedVaccIds } })
+        ]);
+
+        // Group results by patient
+        const result = sharedRecords.map(record => ({
+            patientId: record.patientId,
+            reports: reports.filter(r =>
+                record.reportsData.some(rd => rd._id === r._id.toString())
+            ),
+            prescriptions: prescriptions.filter(p =>
+                record.prescriptionsData.some(pd => pd._id === p._id.toString())
+            ),
+            upcomingVaccinations: upcomingVaccinations.filter(uv =>
+                record.upcomingVaccinationsData.some(u => u._id === uv._id.toString())
+            ),
+            completedVaccinations: completedVaccinations.filter(cv =>
+                record.completedVaccinationsData.some(c => c._id === cv._id.toString())
+            )
+        }));
+
+        console.log("This is the final result data = " , result)
+        res.status(200).json({
+            success: true,
+            data: result
+        });
+
+    } catch (error) {
+        console.error('Error fetching shared records:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server error',
+            error: error.message
+        });
+    }
+};
 
 export {
     insertDoctorDetails,
     setDoctorSchedule,
-    getDoctorProfileData
+    getDoctorProfileData,
+    getSharedRecordsByDoctor
 };

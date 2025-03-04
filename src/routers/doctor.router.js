@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
-import { getDoctorProfileData, insertDoctorDetails, setDoctorSchedule } from "../controllers/Doctor.Controller/doctor.controller.js";
+import { getDoctorProfileData, getSharedRecordsByDoctor, insertDoctorDetails, setDoctorSchedule } from "../controllers/Doctor.Controller/doctor.controller.js";
 import { isDoctorAuth } from "../middlewares/isDoctorAuth.model.js";
 import { getPatientAppointmentData, getPatientProfileDataToViewInAppointment } from "../controllers/Doctor.Controller/appointments.controller.js";
 import { updateAppointmentData } from "../controllers/appointment.controller.js";
@@ -16,6 +16,7 @@ const router = Router();
 router.route("/get-doctor-profile-Details").get(verifyJWT , isDoctorAuth ,  getDoctorProfileData)
 router.route("/get-patient-appointment-data").get(verifyJWT , isDoctorAuth ,  getPatientAppointmentData)
 router.route("/get-patient-profile-Details-to-view-in-appointment/:patientId").get(verifyJWT , isDoctorAuth ,  getPatientProfileDataToViewInAppointment)
+router.route("/view-shared-records-data").get(verifyJWT , isDoctorAuth ,  getSharedRecordsByDoctor)
 
 
 
