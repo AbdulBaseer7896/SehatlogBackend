@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
-import { addFavoritesDoctor, getDoctorData, getDoctorScheduleData, getFavoritesDoctor, getPatientProfileData, insertPatentDetails, removeFavoritesDoctor } from "../controllers/Patient.Controller/patient.controller.js";
+import { addFavoritesDoctor, getDoctorData, getDoctorScheduleData, getFavoritesDoctor, getPatientProfileData, insertPatentDetails, removeFavoritesDoctor, storeShareRecords } from "../controllers/Patient.Controller/patient.controller.js";
 import {isPatientAuth} from "../middlewares/isPatientAuth.middleware.js"
 import { getPatientVaccinationData, insertVaccinationData } from "../controllers/Patient.Controller/vaccination.controller.js";
 import {upload} from "../middlewares/multer.middleware.js"
@@ -38,6 +38,9 @@ router.route("/favorites/remove").patch(verifyJWT, isPatientAuth ,  removeFavori
 
 router.route("/switch-to-personal").post(verifyJWT, switchToPersonal);
 router.route("/switch-profile").post(verifyJWT, switchToFamilyMember);
+router.route("/store-share-records").post(verifyJWT, storeShareRecords);
+
+
 router.route("/insert-Vaccines-Details").post(verifyJWT, isPatientAuth ,
     upload.array("vaccinePic"),
     insertVaccinationData

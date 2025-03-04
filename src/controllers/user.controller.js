@@ -60,26 +60,17 @@ const registerUser = asyncHandler( async(req , res)=>{
 })
 
 const generateAccessAndRefreshToken = async(userId)=>{
-    console.log("this iodfh id  " , userId)
-    console.log("tewst 1")
-
     try {
-        console.log("tewst 2")
 
         const user = await User.findById(userId)
-        console.log("this is the user = " , user)
         const refreshToken = user.generateRefreshToken()
         const accessToken = user.generateAccessToken()
-        console.log("tewst 2")
 
         user.refreshToken = refreshToken
         await user.save({validateBeforeSave: false})
-        console.log("tewst 4")
 
         return {accessToken, refreshToken}
-    } catch (error) {
-        console.log("tewst 3" , error)
-        
+    } catch (error) {   
         throw new Error(500 , "something went wrong while generating refresh and  access token")
     }
 }

@@ -69,7 +69,7 @@ const getPrescriptionRecord = asyncHandler(async (req, res) => {
         // .populate('doctorId')
         // .sort({ date: -1 });
   
-        console.log("this si workign = " , prescriptions)
+        // console.log("this si workign = " , prescriptions)
       res.json({ success: true, data: prescriptions });
     } catch (error) {
       res.status(500).json({ success: false, message: 'Server error' });

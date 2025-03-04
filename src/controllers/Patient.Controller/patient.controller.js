@@ -1,8 +1,9 @@
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { ApiError } from "../../utils/ApiError.js";
-import {PatientInformation} from "../../models/patient.model.js"
+import { PatientInformation } from "../../models/patient.model.js"
 import { ApiResponse } from "../../utils/ApiResponse.js"
 import { DoctorInformation, DoctorSchedule } from "../../models/doctor.model.js";
+import { sharedRecord } from "../../models/shareRecords.model.js";
 
 
 
@@ -10,26 +11,26 @@ import { DoctorInformation, DoctorSchedule } from "../../models/doctor.model.js"
 const insertPatentDetails = asyncHandler(async (req, res) => {
 
     console.log("this is the insertPatent detailes")
-    const {                     fullName,
-                    phoneNumber,
-                    cnicNumber,
-                    gender,
-                    homeAddress,
-                    workingAddress,
-                    dataOfBirth,
-                    country,
-                    nationality,
-                    city,
-                    bloodGroup,
-                    knownAllergies, // Ensure it's passed as an array
-                    chronicDiseases, // Ensure it's passed as an array
-                    currentMedication, // Ensure it's passed as an array
-                    emergencyContactNamePrimary,
-                    emergencyContactRelationShipPrimary,
-                    emergencyContactNumberPrimary,
-                    emergencyContactNameSecondary,
-                    emergencyContactRelationShipSecondary,
-                    emergencyContactNumberSecondary
+    const { fullName,
+        phoneNumber,
+        cnicNumber,
+        gender,
+        homeAddress,
+        workingAddress,
+        dataOfBirth,
+        country,
+        nationality,
+        city,
+        bloodGroup,
+        knownAllergies, // Ensure it's passed as an array
+        chronicDiseases, // Ensure it's passed as an array
+        currentMedication, // Ensure it's passed as an array
+        emergencyContactNamePrimary,
+        emergencyContactRelationShipPrimary,
+        emergencyContactNumberPrimary,
+        emergencyContactNameSecondary,
+        emergencyContactRelationShipSecondary,
+        emergencyContactNumberSecondary
     } = req.body
 
 
@@ -40,7 +41,7 @@ const insertPatentDetails = asyncHandler(async (req, res) => {
     //     $or : [{phoneNumber} , {cnicNumber}]
     // })
 
-    
+
     // if(existedPatient) {
     //     throw new ApiError(409 , "Patient Phone Number or CNIC already exists")
     // }
@@ -48,7 +49,7 @@ const insertPatentDetails = asyncHandler(async (req, res) => {
     const userId = req.user?._id
 
 
-    if(!userId){
+    if (!userId) {
         throw new ApiError(400, "User Id Is required")
     }
 
@@ -56,7 +57,7 @@ const insertPatentDetails = asyncHandler(async (req, res) => {
 
     const isPatientAlreadyExisted = await PatientInformation.findOne({ userId });
 
-    if(!isPatientAlreadyExisted){
+    if (!isPatientAlreadyExisted) {
         const patients = await PatientInformation.create({
             userId,
             phoneNumber,
@@ -80,21 +81,21 @@ const insertPatentDetails = asyncHandler(async (req, res) => {
             emergencyContactNumberSecondary
         })
         console.log("This is 2")
-    
-    
-    
+
+
+
         const createdPatients = await PatientInformation.findById(patients._id)
         console.log("This is 3")
-    
-        if(!createdPatients) {
+
+        if (!createdPatients) {
             console.log("This is 4")
-            throw new ApiError(500 , "Something went wrong while registering the user!!")
+            throw new ApiError(500, "Something went wrong while registering the user!!")
         }
         console.log("This is 5")
-    
-    
+
+
         return res.status(201).json(
-            new ApiResponse(200, createdPatients , "Account details Added successfully")
+            new ApiResponse(200, createdPatients, "Account details Added successfully")
         )
     }
 
@@ -127,7 +128,7 @@ const insertPatentDetails = asyncHandler(async (req, res) => {
             },
             { new: true, select: "-password" } // Include 'select' option to exclude password
         );
-    
+
         return res.status(200).json(
             new ApiResponse(200, updatedPatient, "Patient details updated successfully")
         );
@@ -137,30 +138,81 @@ const insertPatentDetails = asyncHandler(async (req, res) => {
             new ApiResponse(404, null, "Patient not found")
         );
     }
-    })
+})
 
 
+
+
+const storeShareRecords = asyncHandler(async (req, res) => {
+    // Log the request body to check the incoming payload.
+
+    const { reports, prescriptions, upcomingVaccinations, completedVaccinations  , doctors} = req.body.payload || {};
+    console.log("This is the problem   doctors= " , doctors)
+    // console.log("This is import to see = " , req)
+
+    // Ensure the authenticated user is present.
+    const patientId = req.user && req.user._id;
+    if (!patientId) {
+        throw new ApiError(409, "Unauthorized request");
+    }
+
+    // Validate payload format.
+    if (
+        !Array.isArray(reports) ||
+        !Array.isArray(prescriptions) ||
+        !Array.isArray(upcomingVaccinations) ||
+        !Array.isArray(completedVaccinations) ||
+        !Array.isArray(doctors)
+
+    ) {
+        return res.status(400).json({ success: false, message: 'Invalid payload format' });
+    }
+
+    // Prepare the document to insert with separate arrays.
+    const dataToInsert = {
+        patientId,
+        reportsData: reports,              // Expecting each object: { _id, patientId }
+        prescriptionsData: prescriptions,
+        upcomingVaccinationsData: upcomingVaccinations,
+        completedVaccinationsData: completedVaccinations,
+        doctorId:doctors
+
+    };
+
+    try {
+        // Use create() to store the document.
+        const insertedRecord = await sharedRecord.create(dataToInsert);
+        res.json({
+            success: true,
+            message: 'Records shared successfully',
+            data: insertedRecord
+        });
+    } catch (error) {
+        console.error('Error saving shared records:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+});
 
 const getPatientProfileData = async (req, res) => {
     const userId = req.user?._id
 
-    if(!userId){
+    if (!userId) {
         throw new ApiError(400, "User Id Is required")
     }
 
 
     const PatientProfileData = await PatientInformation.findOne({ userId });
 
-    if(PatientProfileData){
+    if (PatientProfileData) {
         return res
-        .status(201)
-        .json(
-            new ApiResponse(201, {
-                PatientProfileData : PatientProfileData,
-            },
-            "Patient Profile Data sended Successfully!!!"
+            .status(201)
+            .json(
+                new ApiResponse(201, {
+                    PatientProfileData: PatientProfileData,
+                },
+                    "Patient Profile Data sended Successfully!!!"
+                )
             )
-        )
     }
 }
 
@@ -210,8 +262,6 @@ const getDoctorData = async (req, res) => {
             select: 'fullName' // only include the full name of the doctor
         });
 
-    console.log("This si ok to see ", DoctorInformationData);
-
     if (DoctorInformationData) {
         return res
             .status(201)
@@ -230,7 +280,7 @@ const getDoctorScheduleData = async (req, res) => {
     const userId = req.user?._id; // Extract user ID from the JWT payload
     const doctorId = req.params.doctorId; // Extract doctorId from the route parameters
 
-    console.log("this is the data = 1 , " , doctorId)
+    console.log("this is the data = 1 , ", doctorId)
 
     if (!userId) {
         throw new ApiError(400, "User Id is required");
@@ -241,9 +291,9 @@ const getDoctorScheduleData = async (req, res) => {
     }
 
     try {
-        console.log("This is the doctor id  = " , doctorId)
-        const DoctorScheduleData = await DoctorSchedule.findOne({ doctorId :doctorId  });
-        console.log("Thisis the data sdgfasd  = " , DoctorScheduleData)
+        console.log("This is the doctor id  = ", doctorId)
+        const DoctorScheduleData = await DoctorSchedule.findOne({ doctorId: doctorId });
+        console.log("Thisis the data sdgfasd  = ", DoctorScheduleData)
 
         if (DoctorScheduleData) {
             return res
@@ -287,7 +337,7 @@ const addFavoritesDoctor = async (req, res) => {
     }
 };
 // router.put('/favorites/remove', auth, async (req, res) => {
-    const removeFavoritesDoctor = async (req, res) => {
+const removeFavoritesDoctor = async (req, res) => {
     try {
         const patient = await PatientInformation.findOneAndUpdate(
             { userId: req.user._id },
@@ -301,7 +351,7 @@ const addFavoritesDoctor = async (req, res) => {
 };
 
 // router.get('/me', auth, async (req, res) => {
-    const getFavoritesDoctor = async (req, res) => {
+const getFavoritesDoctor = async (req, res) => {
     try {
         const patient = await PatientInformation.findOne({ userId: req.user._id });
         console.log("This is patient", patient)
@@ -321,5 +371,6 @@ export {
     getDoctorScheduleData,
     addFavoritesDoctor,
     removeFavoritesDoctor,
-    getFavoritesDoctor
+    getFavoritesDoctor,
+    storeShareRecords
 }
