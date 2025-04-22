@@ -154,19 +154,15 @@ const setDoctorSchedule = asyncHandler(async (req, res) => {
 
 const getSharedRecordsByDoctor = async (req, res) => {
     try {
-        console.log("this is printed")
         //   const { doctorId } = req.params;
         const doctorId = req.user?._id;
-        console.log("This is doctor is = " , doctorId)
-        // const DoctorUserId = await DoctorInformation.findOne({doctorId})
+
         const DoctorUserId = await DoctorInformation.findOne(
             { userId : doctorId },
             { _id: 1 }
           );
           
-        console.log("This is the user id = " , DoctorUserId)
         const sharedRecords = await sharedRecord.find({ doctorId : DoctorUserId });
-        console.log("This is the shard records = " , sharedRecords)
 
         if (!sharedRecords.length) {
             return res.status(404).json({ message: 'No shared records found' });
@@ -214,7 +210,6 @@ const getSharedRecordsByDoctor = async (req, res) => {
             )
         }));
 
-        console.log("This is the final result data = " , result)
         res.status(200).json({
             success: true,
             data: result

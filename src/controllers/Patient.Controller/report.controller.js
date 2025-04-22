@@ -7,9 +7,8 @@ import { uploadOnCloudinary } from "../../utils/cloudinary.js";
 import { ApiResponse } from "../../utils/ApiResponse.js";
 
 const addReportRecord = asyncHandler(async (req, res) => {
-    const { reportName, reportType, reportDate, labName, findings, testName, resultValue, 
-        units, referenceRange, description, notes, status,} = req.body;
-
+    const { reportName, reportType, reportDate, labName, findings, tests, description, notes, status } = req.body;
+    let testsArray = [];
     const patientId = req.user._id;
 
     if (!patientId) {
@@ -19,6 +18,12 @@ const addReportRecord = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Report Name is required");
     }
     const reportPics = [];
+
+    try {
+        testsArray = JSON.parse(tests || "[]");
+    } catch (error) {
+        throw new ApiError(400, "Invalid tests format");
+    }
     // Handle multiple file uploads
     if (req.files) {
         // If files are uploaded, process them
@@ -30,9 +35,18 @@ const addReportRecord = asyncHandler(async (req, res) => {
         }
     }
     // Create the report record
-    const reportData = await report.create({ patientId: patientId, reportName, reportType, 
-        reportDate, labName ,findings, testName, resultValue, units, referenceRange,
-         description, notes, status, reportPics,  // Store the array of image URLs or an empty array if no images were uploaded
+    const reportData = await report.create({
+        patientId,
+        reportName,
+        reportType,
+        reportDate,
+        labName,
+        findings,
+        tests: testsArray, // Store parsed tests array
+        description,
+        notes,
+        status,
+        reportPics,
     });
 
     if (!reportData) {

@@ -45,6 +45,17 @@ const reportSchema = new Schema(
         status: {
             type: String,
         },
+        labName: {
+            type: String,
+        },
+        tests: [
+            {
+                testName: String,
+                resultValue: String,
+                units: String,
+                referenceRange: String,
+            }
+        ],
         reportPics: {
             type: [String], // Array of strings to hold multiple image URLs
         },

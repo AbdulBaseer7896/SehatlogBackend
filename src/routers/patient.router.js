@@ -64,7 +64,7 @@ router.route("/add-prescription-Record").post(verifyJWT, isPatientAuth ,
 
 
 router.route("/add-Report-Record").post(verifyJWT, isPatientAuth ,
-    upload.array("reportPic"),
+    upload.array("reportPics"),
     addReportRecord
 )
 router.route("/add-family-member").post(verifyJWT, isPatientAuth ,addFamilyMember)
