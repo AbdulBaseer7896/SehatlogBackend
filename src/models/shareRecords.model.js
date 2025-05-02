@@ -8,11 +8,11 @@ const sharedRecordSchema = new Schema({
         ref: 'User',
         required: true
     },
-    doctorId: {
+    doctors: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Doctor",
         required: true
-    },
+    }],
     reportsData: [
         {
             _id: { type: String, required: true },

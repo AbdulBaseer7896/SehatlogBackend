@@ -142,56 +142,100 @@ const insertPatentDetails = asyncHandler(async (req, res) => {
 
 
 
-
 const storeShareRecords = asyncHandler(async (req, res) => {
-    // Log the request body to check the incoming payload.
+    const { reports, prescriptions, upcomingVaccinations, completedVaccinations, doctors } = req.body.payload || {};
 
-    const { reports, prescriptions, upcomingVaccinations, completedVaccinations  , doctors} = req.body.payload || {};
-    console.log("This is the problem   doctors= " , doctors)
-    // console.log("This is import to see = " , req)
-
-    // Ensure the authenticated user is present.
+    // Ensure the authenticated user is present
     const patientId = req.user && req.user._id;
     if (!patientId) {
         throw new ApiError(409, "Unauthorized request");
     }
 
-    // Validate payload format.
+    // Validate payload format
     if (
         !Array.isArray(reports) ||
         !Array.isArray(prescriptions) ||
         !Array.isArray(upcomingVaccinations) ||
         !Array.isArray(completedVaccinations) ||
         !Array.isArray(doctors)
-
     ) {
         return res.status(400).json({ success: false, message: 'Invalid payload format' });
     }
 
-    // Prepare the document to insert with separate arrays.
-    const dataToInsert = {
-        patientId,
-        reportsData: reports,              // Expecting each object: { _id, patientId }
-        prescriptionsData: prescriptions,
-        upcomingVaccinationsData: upcomingVaccinations,
-        completedVaccinationsData: completedVaccinations,
-        doctorId:doctors
-
-    };
-
     try {
-        // Use create() to store the document.
-        const insertedRecord = await sharedRecord.create(dataToInsert);
+        // Create a record for each doctor
+        const sharedRecords = await Promise.all(doctors.map(async doctorId => {
+            return await sharedRecord.create({
+                patientId,
+                doctors: [doctorId], // Store single doctor in array
+                reportsData: reports,
+                prescriptionsData: prescriptions,
+                upcomingVaccinationsData: upcomingVaccinations,
+                completedVaccinationsData: completedVaccinations
+            });
+        }));
+
         res.json({
             success: true,
             message: 'Records shared successfully',
-            data: insertedRecord
+            data: sharedRecords
         });
     } catch (error) {
         console.error('Error saving shared records:', error);
         res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
+
+
+// const storeShareRecords = asyncHandler(async (req, res) => {
+//     // Log the request body to check the incoming payload.
+
+//     const { reports, prescriptions, upcomingVaccinations, completedVaccinations  , doctors} = req.body.payload || {};
+//     console.log("This is the problem   doctors= " , doctors)
+//     // console.log("This is import to see = " , req)
+
+//     // Ensure the authenticated user is present.
+//     const patientId = req.user && req.user._id;
+//     if (!patientId) {
+//         throw new ApiError(409, "Unauthorized request");
+//     }
+
+//     // Validate payload format.
+//     if (
+//         !Array.isArray(reports) ||
+//         !Array.isArray(prescriptions) ||
+//         !Array.isArray(upcomingVaccinations) ||
+//         !Array.isArray(completedVaccinations) ||
+//         !Array.isArray(doctors)
+
+//     ) {
+//         return res.status(400).json({ success: false, message: 'Invalid payload format' });
+//     }
+
+//     // Prepare the document to insert with separate arrays.
+//     const dataToInsert = {
+//         patientId,
+//         reportsData: reports,              // Expecting each object: { _id, patientId }
+//         prescriptionsData: prescriptions,
+//         upcomingVaccinationsData: upcomingVaccinations,
+//         completedVaccinationsData: completedVaccinations,
+//         doctorId:doctors
+
+//     };
+
+//     try {
+//         // Use create() to store the document.
+//         const insertedRecord = await sharedRecord.create(dataToInsert);
+//         res.json({
+//             success: true,
+//             message: 'Records shared successfully',
+//             data: insertedRecord
+//         });
+//     } catch (error) {
+//         console.error('Error saving shared records:', error);
+//         res.status(500).json({ success: false, message: 'Internal Server Error' });
+//     }
+// });
 
 const getPatientProfileData = async (req, res) => {
     const userId = req.user?._id

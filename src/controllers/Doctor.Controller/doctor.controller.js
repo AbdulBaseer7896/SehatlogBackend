@@ -158,11 +158,14 @@ const getSharedRecordsByDoctor = async (req, res) => {
         const doctorId = req.user?._id;
 
         const DoctorUserId = await DoctorInformation.findOne(
-            { userId : doctorId },
+            { userId: doctorId },
             { _id: 1 }
-          );
-          
-        const sharedRecords = await sharedRecord.find({ doctorId : DoctorUserId });
+        );
+
+        // const sharedRecords = await sharedRecord.find({ doctorId : DoctorUserId });
+        const sharedRecords = await sharedRecord.find({
+            doctors: DoctorUserId._id
+        }).populate('patientId', 'firstName lastName email');
 
         if (!sharedRecords.length) {
             return res.status(404).json({ message: 'No shared records found' });
