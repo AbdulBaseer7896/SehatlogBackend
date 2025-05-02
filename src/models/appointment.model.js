@@ -5,7 +5,7 @@ import mongoose, { Schema } from "mongoose";
 const AppointmentSchema = new Schema({
     doctorId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Doctor",
+        ref: "DoctorInformation",
         required: true
     },
     patientId: {

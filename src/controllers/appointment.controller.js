@@ -198,33 +198,63 @@ const updateAppointmentData = asyncHandler(async (req, res) => {
 
 
 
+// const getPatienAppointmentData = asyncHandler(async (req, res) => {
+//     console.log("its working")
+//     const userId = req.user?._id
+//     console.log("Yhi is is user id = " , userId)
+
+//     if(!userId){
+//         throw new ApiError(400, "User Id Is required")
+//     }
+
+
+//     // const PatientReportData = await report.findOne({ userId });
+//     const PatientAppointmentData = await Appointment.find({ patientId: userId });
+//     console.log("This is the appointmentData = " , PatientAppointmentData)
+
+
+//     if(PatientAppointmentData){
+//         return res
+//         .status(201)
+//         .json(
+//             new ApiResponse(201, {
+//                 PatientAppointmentData : PatientAppointmentData,
+//             },
+//             "Patient Appointment Data sended Successfully!!!"
+//             )
+//         )
+//     }
+// })
+
+
+
 const getPatienAppointmentData = asyncHandler(async (req, res) => {
-    console.log("its working")
-    const userId = req.user?._id
-    console.log("Yhi is is user id = " , userId)
+    const userId = req.user?._id;
 
-    if(!userId){
-        throw new ApiError(400, "User Id Is required")
+    if (!userId) {
+        throw new ApiError(400, "User Id Is required");
     }
 
+    // Fetch appointments and populate doctor's name
+    const PatientAppointmentData = await Appointment.find({ patientId: userId })
+        .populate({
+            path: "doctorId", // Field to populate
+            model: "User",    // Reference model
+            select: "fullName" // Include only the doctor's name
+        });
 
-    // const PatientReportData = await report.findOne({ userId });
-    const PatientAppointmentData = await Appointment.find({ patientId: userId });
-
-
-    if(PatientAppointmentData){
-        return res
-        .status(201)
-        .json(
-            new ApiResponse(201, {
-                PatientAppointmentData : PatientAppointmentData,
-            },
-            "Patient Appointment Data sended Successfully!!!"
-            )
-        )
-    }
-})
-
+    // Format the response to include doctorName
+    const formattedAppointments = PatientAppointmentData.map(appointment => ({
+        ...appointment.toObject(),
+        doctorName: appointment.doctorId.fullName // Add doctorName field
+    }));
+     console.log("This is the data = " , formattedAppointments)
+    return res.status(201).json(
+        new ApiResponse(201, {
+            PatientAppointmentData: formattedAppointments,
+        }, "Patient Appointment Data sent Successfully!!!")
+    );
+});
 
 
     // router.get('/:appointmentId', auth, async (req, res) =>

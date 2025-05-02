@@ -6,34 +6,101 @@ import { Appointment } from "../../models/appointment.model.js";
 import { PatientInformation } from "../../models/patient.model.js";
 
 
-const getPatientAppointmentData = async (req, res) => {
-    const userId = req.user?._id
+// const getPatientAppointmentData = async (req, res) => {
+//     const userId = req.user?._id
 
-    console.log("this is the id = ", userId)
+//     console.log("this is the id = ", userId)
+
+//     if (!userId) {
+//         throw new ApiError(400, "User Id Is required")
+//     }
+
+//     console.log("this si 2324")
+
+//     const AppointmentData = await Appointment.find({ doctorId: userId });
+//     console.log("This is the Appointments data = " , AppointmentData)
+
+//     console.log("this si the AppointmentData =  " + AppointmentData)
+
+//     if (AppointmentData) {
+//         return res
+//             .status(201)
+//             .json(
+//                 new ApiResponse(201, {
+//                     AppointmentData: AppointmentData,
+//                 },
+//                     "Patient Appointment Data sended Successfully!!!"
+//                 )
+//             )
+//     }
+// }
+
+
+
+
+// const getPatientAppointmentData = async (req, res) => {
+//     const userId = req.user?._id;
+
+//     if (!userId) {
+//         throw new ApiError(400, "User Id Is required");
+//     }
+
+//     // Fetch appointments and populate patient details
+//     const AppointmentData = await Appointment.find({ doctorId: userId })
+//         .populate({
+//             path: "patientId",
+//             model: "User",
+//             select: "fullName" // Only get the patient's name
+//         });
+//         console.log("This is import to see = = " , AppointmentData)
+
+//     // Format response to include patientName while keeping patientId
+//     const formattedAppointments = AppointmentData.map(appointment => ({
+//         ...appointment.toObject(),
+//         patientName: appointment.patientId.fullName
+//     }));getPatientProfileDataToViewInAppointment 
+//     // console.log("This is the data = " , formattedAppointments)
+
+//     return res.status(201).json(
+//         new ApiResponse(201, {
+//             AppointmentData: formattedAppointments,
+//         }, "Doctor Appointments Data Sent Successfully!!!")
+//     );
+// };
+
+
+
+
+const getPatientAppointmentData = async (req, res) => {
+    const userId = req.user?._id;
 
     if (!userId) {
-        throw new ApiError(400, "User Id Is required")
+        throw new ApiError(400, "User Id Is required");
     }
 
-    console.log("this si 2324")
+    // Fetch appointments with patient details
+    const AppointmentData = await Appointment.find({ doctorId: userId })
+        .populate({
+            path: "patientId",
+            model: "User",
+            select: "fullName" // Get only fullName
+        });
 
-    const AppointmentData = await Appointment.find({ doctorId: userId });
-
-    console.log("this si the AppointmentData =  " + AppointmentData)
-
-    if (AppointmentData) {
-        return res
-            .status(201)
-            .json(
-                new ApiResponse(201, {
-                    AppointmentData: AppointmentData,
-                },
-                    "Doctor Profile Data sended Successfully!!!"
-                )
-            )
-    }
-}
-
+    // Format to retain original patientId + add patientName
+    const formattedAppointments = AppointmentData.map(appointment => {
+        const appointmentObj = appointment.toObject();
+        return {
+            ...appointmentObj,
+            patientId: appointmentObj.patientId._id, // Original ID
+            patientName: appointmentObj.patientId.fullName // New field
+        };
+    });
+    return res.status(201).json(
+        new ApiResponse(201, {
+            AppointmentData: formattedAppointments,
+        }, "Doctor Appointments Data Sent Successfully!!!")
+    );
+};
 
 
 const getPatientProfileDataToViewInAppointment = async (req, res) => {
